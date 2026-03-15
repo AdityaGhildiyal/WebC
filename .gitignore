@@ -1,0 +1,64 @@
+# Build directories
+build/
+bin/
+lib/
+*.exe
+*.out
+*.app
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.cmake
+!CMakeLists.txt
+
+# Compiled Object files
+*.o
+*.obj
+*.lo
+*.slo
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Static libraries
+*.a
+*.lib
+*.la
+
+# Executables
+*.exe
+*.out
+*.app
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# LLVM IR files (generated)
+*.ll
+*.bc
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# Excluded source folders (as requested)
+/src/lexer/
+/src/parser/
+/src/semantics/

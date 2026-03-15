@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebC TUI Demo Page</title>
+</head>
+<body>
+
+<header>
+    <h1>🚀 WebC TUI Browser</h1>
+    <nav>
+        <a href="#about">About</a>
+        <a href="#features">Features</a>
+        <a href="#contact">Contact</a>
+        <a href="https://github.com">GitHub</a>
+    </nav>
+</header>
+
+<main>
+
+    <section id="about">
+        <h2>About This Project</h2>
+        <p>
+            This is the <strong>WebC TUI Browser</strong> — a terminal-based web page renderer
+            written in <em>C++</em> from scratch. It parses real HTML and renders it beautifully
+            right inside your terminal window.
+        </p>
+        <p>
+            No Electron. No browser engine. Just raw <code>ANSI escape codes</code> and box-drawing
+            characters making the terminal feel alive.
+        </p>
+    </section>
+
+    <hr>
+
+    <section id="features">
+        <h2>Features</h2>
+
+        <h3>Supported Elements</h3>
+        <ul>
+            <li>All heading levels: h1 through h6</li>
+            <li>Paragraphs with <strong>bold</strong> and <em>italic</em> text</li>
+            <li>Unordered and ordered <u>lists</u> (nested too)</li>
+            <li>Tables with header rows</li>
+            <li>Code and preformatted blocks</li>
+            <li>Links, images, and forms</li>
+            <li>nav, header, footer, section, article</li>
+        </ul>
+
+        <h3>Upcoming</h3>
+        <ol>
+            <li>CSS color parsing (inline styles)</li>
+            <li>Mouse click support for links</li>
+            <li>Scrolling for long pages</li>
+            <li>JavaScript evaluation</li>
+        </ol>
+    </section>
+
+    <hr>
+
+    <h2>Data Table</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Element</th>
+                <th>TUI Style</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>h1</td>
+                <td>Bold full-width bar</td>
+                <td>✅ Done</td>
+            </tr>
+            <tr>
+                <td>p</td>
+                <td>Word-wrapped text</td>
+                <td>✅ Done</td>
+            </tr>
+            <tr>
+                <td>table</td>
+                <td>Box-drawn grid</td>
+                <td>✅ Done</td>
+            </tr>
+            <tr>
+                <td>form</td>
+                <td>Input field widgets</td>
+                <td>✅ Done</td>
+            </tr>
+            <tr>
+                <td>video</td>
+                <td>ASCII art player</td>
+                <td>⏳ Planned</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <hr>
+
+    <h2>Code Example</h2>
+    <pre>
+#include &lt;iostream&gt;
+int main() {
+    std::cout &lt;&lt; "Hello, WebC!" &lt;&lt; std::endl;
+    return 0;
+}</pre>
+
+    <h2>Blockquote</h2>
+    <blockquote>
+        Any sufficiently advanced technology is indistinguishable from magic.
+        — Arthur C. Clarke
+    </blockquote>
+
+    <hr>
+
+    <section id="contact">
+        <h2>Contact Form</h2>
+        <form action="/submit" method="post">
+            <p>Name: <input type="text" name="name" placeholder="Your name" /></p>
+            <p>Email: <input type="email" name="email" placeholder="you@example.com" /></p>
+            <p>Message: </p>
+            <textarea name="message" rows="4" cols="50"></textarea>
+            <p>
+                <input type="checkbox" name="subscribe" /> Subscribe to newsletter
+            </p>
+            <button type="submit">Send Message</button>
+        </form>
+    </section>
+
+    <hr>
+
+    <h2>Image Placeholder</h2>
+    <img src="banner.png" alt="WebC Banner" width="800" height="200" />
+
+    <h4>Nested Lists</h4>
+    <ul>
+        <li>Frontend
+            <ul>
+                <li>HTML Parser</li>
+                <li>TUI Renderer</li>
+            </ul>
+        </li>
+        <li>Backend
+            <ul>
+                <li>LLVM IR Generator</li>
+                <li>Runtime Library</li>
+            </ul>
+        </li>
+    </ul>
+
+</main>
+
+<footer>
+    <p>© 2026 WebC Project. Built with ❤️ in C++.</p>
+    <p>
+        <a href="https://github.com">GitHub</a> |
+        <a href="https://llvm.org">LLVM</a> |
+        <a href="#top">Back to Top</a>
+    </p>
+</footer>
+
+</body>
+</html>

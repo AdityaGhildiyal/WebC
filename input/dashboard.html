@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>StellarAdmin | System Dashboard</title>
+</head>
+<body>
+
+<header>
+    <h1>StellarAdmin Dashboard</h1>
+    <nav>
+        <a href="#overview">Overview</a>
+        <a href="#metrics">Metrics</a>
+        <a href="#users">Users</a>
+        <a href="#settings">Settings</a>
+    </nav>
+</header>
+
+<main>
+
+    <section id="alerts">
+        <h2>System Alerts</h2>
+        <blockquote>
+            <strong>CRITICAL:</strong> Database replication lag exceeded 500ms in region <em>us-west-2</em>.
+        </blockquote>
+        <blockquote>
+            <strong>WARNING:</strong> Storage node Alpha is at 87% capacity. Please provision more disk space soon.
+        </blockquote>
+    </section>
+
+    <hr>
+
+    <section id="health">
+        <h2>Service Health</h2>
+        <ul>
+            <li><strong>API Gateway:</strong> <mark>ONLINE</mark> (99.99% uptime)</li>
+            <li><strong>Auth Service:</strong> <mark>ONLINE</mark> (100.0% uptime)</li>
+            <li><strong>Payment Processing:</strong> <u>DEGRADED</u> (Connection timeouts)</li>
+            <li><strong>Cache Cluster:</strong> <mark>ONLINE</mark> (99.95% hit rate)</li>
+        </ul>
+    </section>
+
+    <hr>
+
+    <section id="metrics">
+        <h2>Production Traffic (24h)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Endpoint</th>
+                    <th>Requests</th>
+                    <th>Avg Latency</th>
+                    <th>Error Rate</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>GET /api/v1/users</code></td>
+                    <td>1,245,890</td>
+                    <td>24ms</td>
+                    <td>0.01%</td>
+                </tr>
+                <tr>
+                    <td><code>POST /api/v1/auth</code></td>
+                    <td>89,400</td>
+                    <td>45ms</td>
+                    <td>0.14%</td>
+                </tr>
+                <tr>
+                    <td><code>POST /api/v1/checkout</code></td>
+                    <td>12,500</td>
+                    <td>310ms</td>
+                    <td>2.45%</td>
+                </tr>
+                <tr>
+                    <td><code>GET /api/v1/feed</code></td>
+                    <td>4,500,100</td>
+                    <td>12ms</td>
+                    <td>0.00%</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <hr>
+
+    <section id="deploy">
+        <h2>Quick Deployment Action</h2>
+        <p>
+            Trigger a manual restart of the payment processing workers. 
+            Ensure you have approval from the on-call engineer before proceeding.
+        </p>
+        <form action="/deploy" method="post">
+            <p><input type="text" name="ticket_id" placeholder="JIRA Ticket ID" /></p>
+            <p>
+                <select name="environment" id="env">
+                    <option value="prod">Production</option>
+                </select>
+            </p>
+            <p>
+                <input type="checkbox" name="confirm" />
+                I acknowledge the risks of this action.
+            </p>
+            <button type="submit">RESTART WORKERS</button>
+        </form>
+    </section>
+
+</main>
+
+<footer>
+    <p>Last updated: <em><time>2026-03-14 21:00 UTC</time></em></p>
+    <p>Internal Use Only · StellarNet Inc.</p>
+</footer>
+
+</body>
+</html>

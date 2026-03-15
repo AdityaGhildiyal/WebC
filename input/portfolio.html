@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Alex Chen — Developer Portfolio</title>
+</head>
+<body>
+
+<header>
+    <h1>Alex Chen</h1>
+    <nav>
+        <a href="#skills">Skills</a>
+        <a href="#projects">Projects</a>
+        <a href="#experience">Experience</a>
+        <a href="#contact">Contact</a>
+    </nav>
+</header>
+
+<main>
+
+    <section id="intro">
+        <h2>Full-Stack Engineer &amp; Open Source Contributor</h2>
+        <p>
+            I build fast, reliable software from bare-metal C++ to cloud-native microservices.
+            Currently obsessed with compilers, terminal UIs, and making computers feel <em>alive</em>.
+        </p>
+        <p>
+            Based in <strong>San Francisco, CA</strong> · Open to remote roles ·
+            <a href="mailto:alex@example.com">alex@example.com</a>
+        </p>
+    </section>
+
+    <hr>
+
+    <section id="skills">
+        <h2>Technical Skills</h2>
+
+        <h3>Languages</h3>
+        <ul>
+            <li><strong>C / C++17</strong> — Systems programming, compilers, LLVM</li>
+            <li><strong>Python 3</strong> — ML pipelines, scripting, FastAPI</li>
+            <li><strong>TypeScript</strong> — React, Next.js, Node.js</li>
+            <li><strong>Rust</strong> — Memory-safe CLI tools and parsers</li>
+            <li><strong>SQL</strong> — PostgreSQL, SQLite, query optimisation</li>
+        </ul>
+
+        <h3>Tools &amp; Platforms</h3>
+        <ul>
+            <li>Linux, Docker, Kubernetes, GitHub Actions (CI/CD)</li>
+            <li>LLVM / Clang toolchain, GDB, Valgrind</li>
+            <li>AWS (EC2, S3, Lambda), Terraform</li>
+        </ul>
+    </section>
+
+    <hr>
+
+    <section id="projects">
+        <h2>Projects</h2>
+
+        <h3>WebC — TUI Web Browser</h3>
+        <p>
+            A from-scratch HTML parser and terminal renderer written in <strong>C++17</strong>.
+            Parses real HTML files and renders them as beautiful ANSI TUI output — no Electron,
+            no Chromium, just raw escape codes and box-drawing characters.
+        </p>
+        <ul>
+            <li>Hand-written recursive-descent HTML parser</li>
+            <li>Supports 30+ HTML elements including tables, forms, and code blocks</li>
+            <li>LLVM IR code generation backend (in progress)</li>
+        </ul>
+
+        <h3>NanoLang — Toy Compiler</h3>
+        <p>
+            A statically-typed, expression-oriented language that compiles to x86-64 assembly.
+            Built as a learning exercise in compiler construction.
+        </p>
+        <ul>
+            <li>LL(1) recursive descent parser</li>
+            <li>Register-allocation with graph colouring</li>
+            <li>1,200 lines of pure C, zero dependencies</li>
+        </ul>
+
+        <h3>FastCache — Distributed Key-Value Store</h3>
+        <p>
+            A Redis-compatible in-memory store supporting replication and snapshotting.
+            Handles <mark>120,000 ops/sec</mark> on a single commodity server.
+        </p>
+    </section>
+
+    <hr>
+
+    <section id="experience">
+        <h2>Work Experience</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Company</th>
+                    <th>Role</th>
+                    <th>Period</th>
+                    <th>Stack</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Stripe</td>
+                    <td>Senior SWE</td>
+                    <td>2023 – Present</td>
+                    <td>Ruby, Go, C++</td>
+                </tr>
+                <tr>
+                    <td>Cloudflare</td>
+                    <td>Systems Engineer</td>
+                    <td>2021 – 2023</td>
+                    <td>Rust, C, Linux</td>
+                </tr>
+                <tr>
+                    <td>Google</td>
+                    <td>SWE Intern</td>
+                    <td>Summer 2020</td>
+                    <td>C++, Bazel</td>
+                </tr>
+                <tr>
+                    <td>Stanford HCI Lab</td>
+                    <td>Research Asst.</td>
+                    <td>2019 – 2021</td>
+                    <td>Python, JS</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <hr>
+
+    <section id="code">
+        <h2>Code Sample</h2>
+        <p>A fast in-place string reverse in C:</p>
+        <pre>
+void str_reverse(char *s) {
+    char *l = s;
+    char *r = s + strlen(s) - 1;
+    while (l &lt; r) {
+        char tmp = *l;
+        *l++ = *r;
+        *r-- = tmp;
+    }
+}</pre>
+    </section>
+
+    <hr>
+
+    <blockquote>
+        First, solve the problem. Then, write the code. — John Johnson
+    </blockquote>
+
+    <hr>
+
+    <section id="education">
+        <h2>Education</h2>
+
+        <h3>B.S. Computer Science — Stanford University</h3>
+        <ul>
+            <li>GPA: 3.94 / 4.0</li>
+            <li>Coursework: Compilers, Operating Systems, Distributed Systems, ML</li>
+            <li>Teaching Assistant — CS107: Computer Organization &amp; Systems</li>
+        </ul>
+    </section>
+
+    <hr>
+
+    <section id="contact">
+        <h2>Get In Touch</h2>
+        <form action="/contact" method="post">
+            <p><input type="text"  name="name"    placeholder="Your name" /></p>
+            <p><input type="email" name="email"   placeholder="your@email.com" /></p>
+            <p><input type="text"  name="subject" placeholder="Subject" /></p>
+            <p><textarea name="message" rows="4"></textarea></p>
+            <p>
+                <input type="checkbox" name="human" />
+                I am a human (probably)
+            </p>
+            <button type="submit">Send Message 🚀</button>
+        </form>
+    </section>
+
+</main>
+
+<footer>
+    <p>Made with C++ and terminal love · © 2026 Alex Chen</p>
+    <p>
+        <a href="https://github.com/alexchen">GitHub</a> ·
+        <a href="https://linkedin.com/in/alexchen">LinkedIn</a> ·
+        <a href="https://alexchen.dev">Website</a>
+    </p>
+</footer>
+
+</body>
+</html>

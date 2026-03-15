@@ -1,0 +1,139 @@
+<html>
+<body>
+
+<header>
+  <h1 id="title">"WebC Live App"</h1>
+  <nav>
+    <a>"Dashboard"</a>
+    <a>"Analytics"</a>
+    <a>"Settings"</a>
+  </nav>
+</header>
+
+<main>
+
+  <section id="math">
+    <h2>"Dynamic Calculations"</h2>
+    <p>"WebC evaluates JavaScript expressions at compile time and injects the results."</p>
+
+    let width  = 1920;
+    let height = 1080;
+    let pixels = width * height;
+
+    let fps       = 60;
+    let bitdepth  = 32;
+    let frameSize = pixels * bitdepth / 8;
+    let bandwidth = frameSize * fps;
+
+    <h3>"Screen Stats"</h3>
+    <ul>
+      <li>"Resolution : " width " x " height</li>
+      <li>"Total pixels: " pixels</li>
+      <li>"Frame size  : " frameSize " bytes"</li>
+      <li>"Bandwidth   : " bandwidth " bytes/sec"</li>
+    </ul>
+  </section>
+
+  <section id="shop">
+    <h2>"Shopping Cart"</h2>
+
+    let price    = 299;
+    let qty      = 3;
+    let subtotal = price * qty;
+    let discount = 50;
+    let taxRate  = 18;
+    let taxable  = subtotal - discount;
+    let tax      = taxable * taxRate / 100;
+    let total    = taxable + tax;
+
+    <table>
+      <thead>
+        <tr>
+          <th>"Item"</th>
+          <th>"Unit Price"</th>
+          <th>"Qty"</th>
+          <th>"Amount"</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>"WebC Pro License"</td>
+          <td>"$" price</td>
+          <td>qty</td>
+          <td>"$" subtotal</td>
+        </tr>
+        <tr>
+          <td>"Discount"</td>
+          <td>""</td>
+          <td>""</td>
+          <td>"-$" discount</td>
+        </tr>
+        <tr>
+          <td>"Tax (" taxRate "%)"</td>
+          <td>""</td>
+          <td>""</td>
+          <td>"$" tax</td>
+        </tr>
+        <tr>
+          <th>"TOTAL"</th>
+          <th>""</th>
+          <th>""</th>
+          <th>"$" total</th>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="stats">
+    <h2>"Server Stats"</h2>
+
+    let requests  = 1000000;
+    let errors    = 234;
+    let uptime    = 99;
+    let avgMs     = 42;
+    let p99Ms     = avgMs * 4;
+    let rps       = requests / 3600;
+
+    <ul>
+      <li>"Total requests : " requests</li>
+      <li>"Errors         : " errors</li>
+      <li>"Uptime         : " uptime "%"</li>
+      <li>"Avg latency    : " avgMs " ms"</li>
+      <li>"P99 latency    : " p99Ms " ms"</li>
+      <li>"Requests/sec   : " rps</li>
+    </ul>
+  </section>
+
+  <section id="geo">
+    <h2>"Geometry"</h2>
+
+    let r  = 7;
+    let pi = 3;
+    let circumference = 2 * pi * r;
+    let area          = pi * r * r;
+
+    let side     = 12;
+    let diagonal = side * 14 / 10;
+    let sqArea   = side * side;
+
+    <h3>"Circle (r = " r ")"</h3>
+    <ul>
+      <li>"Circumference : " circumference</li>
+      <li>"Area          : " area</li>
+    </ul>
+
+    <h3>"Square (side = " side ")"</h3>
+    <ul>
+      <li>"Diagonal : " diagonal</li>
+      <li>"Area     : " sqArea</li>
+    </ul>
+  </section>
+
+</main>
+
+<footer>
+  <p>"Compiled by WebC — the terminal-native web compiler."</p>
+</footer>
+
+</body>
+</html>
