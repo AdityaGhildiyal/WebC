@@ -60,7 +60,7 @@ Makefile
 
 # Excluded source folders (as requested)
 /src/lexer/
-/src/parser/
+!/src/parser/
 !src/parser/Parser.cpp
 !src/parser/Parser.hpp
 /src/semantics/
