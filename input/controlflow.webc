@@ -1,0 +1,53 @@
+<html>
+<body>
+
+  <header>
+    <h1>"WebC Control Flow Demo"</h1>
+  </header>
+
+  <main>
+
+    <section>
+      <h2>"1. If / Else — Age Verification"</h2>
+
+      let age = 20;
+
+      if (age >= 18) {
+        <p>"Access Granted. Welcome to the dashboard!"</p>
+      } else {
+        <p>"Access Denied. You are too young."</p>
+      }
+    </section>
+
+    <section>
+      <h2>"2. For Loop with Nested If"</h2>
+      <ul>
+        for (let i = 1; i <= 5; i = i + 1) {
+          if (i == 3) {
+            <li>"Item 3 is SPECIAL"</li>
+          } else {
+            <li>"Regular item: " i</li>
+          }
+        }
+      </ul>
+    </section>
+
+    <section>
+      <h2>"3. Compile-time Multiplication Table (1 to 5)"</h2>
+      <ul>
+        let base = 7;
+        for (let n = 1; n <= 5; n = n + 1) {
+          let product = base * n;
+          <li>base " x " n " = " product</li>
+        }
+      </ul>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>"Powered by WebC — Turing-complete TUI compiler."</p>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,57 @@
+<html>
+<body>
+  <header>
+    <h1>"WebC Calculator Demo"</h1>
+  </header>
+
+  <main>
+    <section>
+      <h2>"1. Physics Calculation"</h2>
+      
+      let mass = 15;
+      let accel = 9;
+      let force = mass * accel;
+
+      <ul>
+        <li>"Mass         : " mass " kg"</li>
+        <li>"Acceleration : " accel " m/s^2"</li>
+        <li>"Force (F=ma) : " force " Newtons"</li>
+      </ul>
+    </section>
+
+    <hr></hr>
+
+    <section>
+      <h2>"2. Simple Mortgage Calculation"</h2>
+      
+      let principal = 300000;
+      let rate = 5;
+      let years = 30;
+      let totalInterest = principal * rate * years / 100;
+      let grandTotal = principal + totalInterest;
+
+      <table>
+        <thead>
+          <tr>
+            <th>"Principal"</th>
+            <th>"Rate"</th>
+            <th>"Years"</th>
+            <th>"Interest"</th>
+            <th>"Grand Total"</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>"$" principal</td>
+            <td>rate "%"</td>
+            <td>years</td>
+            <td>"$" totalInterest</td>
+            <td>"$" grandTotal</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+  </main>
+</body>
+</html>

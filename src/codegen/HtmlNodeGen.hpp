@@ -36,11 +36,20 @@ private:
     // Convert a WebC TagNode into an HtmlNode (recursively)
     std::shared_ptr<HtmlNode> visitTag(std::shared_ptr<TagNode> tag);
 
+    // Generate child HtmlNodes from a list of AST nodes into a parent
+    void generateInto(const std::vector<std::shared_ptr<ASTNode>>& nodes,
+                      std::shared_ptr<HtmlNode> parent);
+
     // Execute a JS-like statement (let/const declaration, assignment)
     void execStatement(std::shared_ptr<ASTNode> node);
 
+    // Evaluate control-flow nodes, appending resulting HtmlNodes to parent
+    void evalIf(std::shared_ptr<IfNode> node, std::shared_ptr<HtmlNode> parent);
+    void evalFor(std::shared_ptr<ForNode> node, std::shared_ptr<HtmlNode> parent);
+
     // ------- Expression evaluators -------
     double      evalNum(std::shared_ptr<ASTNode> node);   // → numeric value
+    bool        evalCond(std::shared_ptr<ASTNode> node);  // → boolean condition
     std::string evalStr(std::shared_ptr<ASTNode> node);   // → string representation
 
     // Helper: format a double cleanly (no trailing .000000)

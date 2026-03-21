@@ -175,3 +175,26 @@ public:
         value->debugPrint(indent + 1);
     }
 };
+
+// 11. For Loop Node (e.g., for (let i = 0; i < 3; i = i + 1) { ... })
+class ForNode : public ASTNode {
+public:
+    std::shared_ptr<ASTNode> init;       // e.g., let i = 0
+    std::shared_ptr<ASTNode> condition;  // e.g., i < 3
+    std::shared_ptr<ASTNode> increment;  // e.g., i = i + 1
+    std::vector<std::shared_ptr<ASTNode>> body;
+
+    ForNode(std::shared_ptr<ASTNode> i,
+            std::shared_ptr<ASTNode> cond,
+            std::shared_ptr<ASTNode> inc)
+        : init(i), condition(cond), increment(inc) {}
+
+    void debugPrint(int indent) override {
+        for(int i=0; i<indent; i++) printf("  ");
+        printf("JS FOR LOOP:\n");
+        if (init) init->debugPrint(indent + 1);
+        if (condition) condition->debugPrint(indent + 1);
+        if (increment) increment->debugPrint(indent + 1);
+        for(auto& stmt : body) stmt->debugPrint(indent + 2);
+    }
+};

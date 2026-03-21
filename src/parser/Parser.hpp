@@ -27,6 +27,8 @@ private:
     std::shared_ptr<ASTNode> parseStatement();
     std::shared_ptr<ASTNode> parseVarDecl();
     std::shared_ptr<ASTNode> parseAssignment();
+    std::shared_ptr<ASTNode> parseIfStatement();
+    std::shared_ptr<ASTNode> parseForStatement();
     std::shared_ptr<ASTNode> parseExpression();
     std::shared_ptr<ASTNode> parseComparison();
     std::shared_ptr<ASTNode> parseTerm();        // Multiplication/Division
