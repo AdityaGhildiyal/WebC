@@ -198,3 +198,19 @@ public:
         for(auto& stmt : body) stmt->debugPrint(indent + 2);
     }
 };
+
+// 12. While Loop Node (e.g., while (count <= 5) { ... })
+class WhileNode : public ASTNode {
+public:
+    std::shared_ptr<ASTNode> condition;
+    std::vector<std::shared_ptr<ASTNode>> body;
+
+    WhileNode(std::shared_ptr<ASTNode> cond) : condition(cond) {}
+
+    void debugPrint(int indent) override {
+        for(int i=0; i<indent; i++) printf("  ");
+        printf("JS WHILE LOOP:\n");
+        if (condition) condition->debugPrint(indent + 1);
+        for(auto& stmt : body) stmt->debugPrint(indent + 2);
+    }
+};

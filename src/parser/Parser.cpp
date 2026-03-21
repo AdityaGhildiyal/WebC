@@ -53,6 +53,10 @@ std::shared_ptr<ASTNode> Parser::parseNode() {
     if (peek().type == TokenType::FOR) {
         return parseForStatement();
     }
+    // while loop
+    if (peek().type == TokenType::WHILE) {
+        return parseWhileStatement();
+    }
     // Statement (let, const, assignment)
     if (peek().type == TokenType::LET || peek().type == TokenType::CONST) {
         return parseStatement();
@@ -220,6 +224,23 @@ std::shared_ptr<ASTNode> Parser::parseForStatement() {
     expect(TokenType::RBRACE, "Expected '}' to close for body");
 
     return forNode;
+}
+
+// WhileStatement -> while ( Expression ) { Node* }
+std::shared_ptr<ASTNode> Parser::parseWhileStatement() {
+    advance(); // consume 'while'
+    expect(TokenType::LPAREN, "Expected '(' after 'while'");
+    auto cond = parseExpression();
+    expect(TokenType::RPAREN, "Expected ')' after while condition");
+
+    expect(TokenType::LBRACE, "Expected '{' to open while body");
+    auto whileNode = std::make_shared<WhileNode>(cond);
+    while (!isAtEnd() && peek().type != TokenType::RBRACE) {
+        whileNode->body.push_back(parseNode());
+    }
+    expect(TokenType::RBRACE, "Expected '}' to close while body");
+
+    return whileNode;
 }
 
 // Assignment -> IDENTIFIER = Expression ;

@@ -169,6 +169,16 @@ void HtmlNodeGen::evalFor(std::shared_ptr<ForNode> node,
     }
 }
 
+// evalWhile — execute a while-loop at compile time
+void HtmlNodeGen::evalWhile(std::shared_ptr<WhileNode> node,
+                             std::shared_ptr<HtmlNode> parent) {
+    int guard = 0;
+    while (guard++ < 10000) {
+        if (!node->condition || !evalCond(node->condition)) break;
+        generateInto(node->body, parent);
+    }
+}
+
 // generateInto — walk a list of AST nodes and push resulting HtmlNode
 // children into 'parent'. Used by visitTag() and control-flow evaluators.
 void HtmlNodeGen::generateInto(const std::vector<std::shared_ptr<ASTNode>>& nodes,
@@ -202,6 +212,11 @@ void HtmlNodeGen::generateInto(const std::vector<std::shared_ptr<ASTNode>>& node
         else if (auto forNode = std::dynamic_pointer_cast<ForNode>(child)) {
             flushText();
             evalFor(forNode, parent);
+        }
+        // while loop
+        else if (auto whileNode = std::dynamic_pointer_cast<WhileNode>(child)) {
+            flushText();
+            evalWhile(whileNode, parent);
         }
         // JS statement
         else if (std::dynamic_pointer_cast<VarDeclNode>(child) ||
@@ -261,6 +276,10 @@ std::vector<std::shared_ptr<HtmlNode>> HtmlNodeGen::generate(
             wrapper->children.clear();
         } else if (auto forNode = std::dynamic_pointer_cast<ForNode>(node)) {
             evalFor(forNode, wrapper);
+            for (auto& c : wrapper->children) roots.push_back(c);
+            wrapper->children.clear();
+        } else if (auto whileNode = std::dynamic_pointer_cast<WhileNode>(node)) {
+            evalWhile(whileNode, wrapper);
             for (auto& c : wrapper->children) roots.push_back(c);
             wrapper->children.clear();
         } else {

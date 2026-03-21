@@ -46,6 +46,7 @@ private:
     // Evaluate control-flow nodes, appending resulting HtmlNodes to parent
     void evalIf(std::shared_ptr<IfNode> node, std::shared_ptr<HtmlNode> parent);
     void evalFor(std::shared_ptr<ForNode> node, std::shared_ptr<HtmlNode> parent);
+    void evalWhile(std::shared_ptr<WhileNode> node, std::shared_ptr<HtmlNode> parent);
 
     // ------- Expression evaluators -------
     double      evalNum(std::shared_ptr<ASTNode> node);   // → numeric value

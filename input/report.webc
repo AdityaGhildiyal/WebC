@@ -1,0 +1,191 @@
+<html>
+<body>
+
+<header>
+  <h1>"StellarMart — Inventory & Sales Report"</h1>
+  <nav>
+    <a>"Overview"</a>
+    <a>"Sales"</a>
+    <a>"Restock"</a>
+    <a>"Profit"</a>
+  </nav>
+</header>
+
+<main>
+
+  <section>
+    <h2>"1. Store Overview"</h2>
+
+    let totalProducts  = 5;
+    let storeCapacity  = 500;
+    let currentStock   = 312;
+    let usedPercent    = currentStock * 100 / storeCapacity;
+
+    <ul>
+      <li>"Total product lines : " totalProducts</li>
+      <li>"Store capacity       : " storeCapacity " units"</li>
+      <li>"Current stock        : " currentStock " units"</li>
+      <li>"Capacity used        : " usedPercent "%"</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>"2. Product Sales — This Month (for loop)"</h2>
+
+    let unitPrice  = 49;
+    let unitsSold  = 1;
+    let totalSales = 0;
+
+    <table>
+      <thead>
+        <tr>
+          <th>"Week"</th>
+          <th>"Units Sold"</th>
+          <th>"Weekly Revenue ($)"</th>
+        </tr>
+      </thead>
+      <tbody>
+        for (let week = 1; week <= 4; week = week + 1) {
+          let weekRevenue = unitsSold * unitPrice * week * 10;
+          <tr>
+            <td>"Week " week</td>
+            <td>unitsSold * week * 10</td>
+            <td>weekRevenue</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>"3. Low Stock Alert (while loop + if)"</h2>
+    <p>"Products below reorder threshold of 50 units are flagged for restock."</p>
+
+    let product = 1;
+    let stock1  = 120;
+    let stock2  = 35;
+    let stock3  = 80;
+    let stock4  = 12;
+    let stock5  = 67;
+    let threshold = 50;
+
+    <ul>
+      while (product <= 5) {
+        if (product == 1) {
+          if (stock1 <= threshold) {
+            <li>"Product 1 — RESTOCK NEEDED (" stock1 " units left)"</li>
+          } else {
+            <li>"Product 1 — OK (" stock1 " units)"</li>
+          }
+        } else {
+        }
+        if (product == 2) {
+          if (stock2 <= threshold) {
+            <li>"Product 2 — RESTOCK NEEDED (" stock2 " units left)"</li>
+          } else {
+            <li>"Product 2 — OK (" stock2 " units)"</li>
+          }
+        } else {
+        }
+        if (product == 3) {
+          if (stock3 <= threshold) {
+            <li>"Product 3 — RESTOCK NEEDED (" stock3 " units left)"</li>
+          } else {
+            <li>"Product 3 — OK (" stock3 " units)"</li>
+          }
+        } else {
+        }
+        if (product == 4) {
+          if (stock4 <= threshold) {
+            <li>"Product 4 — RESTOCK NEEDED (" stock4 " units left)"</li>
+          } else {
+            <li>"Product 4 — OK (" stock4 " units)"</li>
+          }
+        } else {
+        }
+        if (product == 5) {
+          if (stock5 <= threshold) {
+            <li>"Product 5 — RESTOCK NEEDED (" stock5 " units left)"</li>
+          } else {
+            <li>"Product 5 — OK (" stock5 " units)"</li>
+          }
+        } else {
+        }
+        product = product + 1;
+      }
+    </ul>
+  </section>
+
+  <section>
+    <h2>"4. Profit Analysis"</h2>
+
+    let revenue      = 24500;
+    let costOfGoods  = 14200;
+    let rent         = 3000;
+    let salary       = 5000;
+    let totalExpense = costOfGoods + rent + salary;
+    let grossProfit  = revenue - costOfGoods;
+    let netProfit    = revenue - totalExpense;
+    let marginPct    = netProfit * 100 / revenue;
+
+    <table>
+      <thead>
+        <tr>
+          <th>"Item"</th>
+          <th>"Amount ($)"</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>"Total Revenue"</td>    <td>revenue</td></tr>
+        <tr><td>"Cost of Goods"</td>    <td>costOfGoods</td></tr>
+        <tr><td>"Gross Profit"</td>     <td>grossProfit</td></tr>
+        <tr><td>"Rent"</td>             <td>rent</td></tr>
+        <tr><td>"Salaries"</td>         <td>salary</td></tr>
+        <tr><td>"Total Expenses"</td>   <td>totalExpense</td></tr>
+        <tr><td>"Net Profit"</td>       <td>netProfit</td></tr>
+        <tr><td>"Profit Margin"</td>    <td>marginPct "%"</td></tr>
+      </tbody>
+    </table>
+
+    if (netProfit >= 0) {
+      <p>"Status: PROFITABLE month. Great job!"</p>
+    } else {
+      <p>"Status: LOSS reported. Review expenses."</p>
+    }
+  </section>
+
+  <section>
+    <h2>"5. Compound Interest Projection (for loop)"</h2>
+    <p>"Projecting $10,000 invested at 8% annual rate over 5 years."</p>
+
+    let principal  = 10000;
+    let rate       = 8;
+
+    <table>
+      <thead>
+        <tr>
+          <th>"Year"</th>
+          <th>"Growth ($)"</th>
+        </tr>
+      </thead>
+      <tbody>
+        for (let yr = 1; yr <= 5; yr = yr + 1) {
+          let growth = principal * rate * yr / 100;
+          <tr>
+            <td>"Year " yr</td>
+            <td>principal + growth</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </section>
+
+</main>
+
+<footer>
+  <p>"StellarMart Internal Report — Compiled by WebC at build time."</p>
+  <p>"All values are computed expressions — no runtime engine required."</p>
+</footer>
+
+</body>
+</html>
