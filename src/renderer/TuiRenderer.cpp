@@ -54,10 +54,8 @@ static const std::string XX = "┼";
 
 // ─── Constructor ──────────────────────────────────────────────────────────
 TuiRenderer::TuiRenderer() {
-    // Try to detect terminal width (default 80)
     termWidth = 80;
 #ifdef _WIN32
-    // Windows: try COLUMNS env or default
     const char* w = std::getenv("COLUMNS");
     if (w) termWidth = std::max(40, std::atoi(w));
 #else
@@ -129,7 +127,6 @@ std::string TuiRenderer::resolveInlineText(const std::shared_ptr<HtmlNode>& node
 
     for (auto& ch : node->children) {
         std::string ct;
-        // Handle inline formatting tags
         if (ch->tag == "strong" || ch->tag == "b") {
             ct = std::string(BOLD) + getNodeText(ch) + RST;
         } else if (ch->tag == "em" || ch->tag == "i") {
@@ -167,7 +164,6 @@ void TuiRenderer::drawBox(const std::string& title, const std::string& content,
     std::string bc = borderColor ? borderColor : "";
     std::string tc = textColor   ? textColor   : "";
 
-    // Top border
     std::cout << pad << bc << TL;
     if (!title.empty()) {
         std::string header = " " + title + " ";
@@ -179,7 +175,6 @@ void TuiRenderer::drawBox(const std::string& title, const std::string& content,
     }
     std::cout << TR << RST << "\n";
 
-    // Content lines
     auto lines = wordWrap(content, innerW - 2);
     for (auto& ln : lines) {
         std::cout << pad << bc << VT << RST << " "
@@ -189,7 +184,6 @@ void TuiRenderer::drawBox(const std::string& title, const std::string& content,
         std::cout << bc << VT << RST << "\n";
     }
 
-    // Bottom border
     std::cout << pad << bc << BL;
     for (int i = 0; i < innerW; i++) std::cout << HZ;
     std::cout << BR << RST << "\n";
@@ -203,7 +197,7 @@ void TuiRenderer::renderHeading(const std::shared_ptr<HtmlNode>& node, int level
 
     std::cout << "\n";
     switch (level) {
-        case 1:  // H1 — full-width bold cyan bar
+        case 1:  
         {
             std::string bar = " ═ " + text + " ═";
             int pad = (termWidth - (int)text.size() - 6);
@@ -281,7 +275,6 @@ void TuiRenderer::renderListItem(const std::shared_ptr<HtmlNode>& node, int dept
         }
     }
 
-    // Nested lists within the li
     for (auto& ch : node->children) {
         if (ch->tag == "ul") renderUnorderedList(ch, depth + 1);
         else if (ch->tag == "ol") renderOrderedList(ch, depth + 1);
@@ -289,7 +282,6 @@ void TuiRenderer::renderListItem(const std::shared_ptr<HtmlNode>& node, int dept
 }
 
 void TuiRenderer::renderTable(const std::shared_ptr<HtmlNode>& node) {
-    // Collect all rows
     std::vector<std::shared_ptr<HtmlNode>> rows;
     bool hasHead = false;
 
@@ -306,7 +298,6 @@ void TuiRenderer::renderTable(const std::shared_ptr<HtmlNode>& node) {
     collectRows(node);
     if (rows.empty()) return;
 
-    // Compute column count and widths
     size_t cols = 0;
     for (auto& row : rows) {
         size_t cnt = 0;
@@ -320,7 +311,6 @@ void TuiRenderer::renderTable(const std::shared_ptr<HtmlNode>& node) {
     if (colW < 5) colW = 5;
 
     std::cout << "\n";
-    // Top border
     std::cout << FG_BRIGHT_CYAN << TL;
     for (size_t c = 0; c < cols; c++) {
         for (int i = 0; i < colW; i++) std::cout << HZ;
@@ -332,7 +322,6 @@ void TuiRenderer::renderTable(const std::shared_ptr<HtmlNode>& node) {
     for (auto& row : rows) {
         bool isHeader = hasHead && firstRow;
 
-        // Collect cell texts
         std::vector<std::string> cells;
         for (auto& c : row->children) {
             if (c->tag == "td" || c->tag == "th") {
@@ -343,7 +332,6 @@ void TuiRenderer::renderTable(const std::shared_ptr<HtmlNode>& node) {
         }
         while (cells.size() < cols) cells.push_back("");
 
-        // Row
         for (size_t c = 0; c < cols; c++) {
             std::cout << FG_BRIGHT_CYAN << VT << RST;
             if (isHeader) std::cout << BOLD << FG_BRIGHT_YELLOW;
@@ -354,7 +342,6 @@ void TuiRenderer::renderTable(const std::shared_ptr<HtmlNode>& node) {
         }
         std::cout << FG_BRIGHT_CYAN << VT << RST << "\n";
 
-        // Separator after header
         if (firstRow && hasHead) {
             std::cout << FG_BRIGHT_CYAN << ML;
             for (size_t c = 0; c < cols; c++) {
@@ -366,7 +353,6 @@ void TuiRenderer::renderTable(const std::shared_ptr<HtmlNode>& node) {
         firstRow = false;
     }
 
-    // Bottom border
     std::cout << FG_BRIGHT_CYAN << BL;
     for (size_t c = 0; c < cols; c++) {
         for (int i = 0; i < colW; i++) std::cout << HZ;
@@ -397,7 +383,6 @@ void TuiRenderer::renderInput(const std::shared_ptr<HtmlNode>& node) {
                   << " [" << (value.empty() ? "#000000" : value) << "]\n";
     } else {
         std::string display = value.empty() ? placeholder : value;
-        // Text/password/email/etc.
         std::cout << "  " << DIM << name << RST << ": "
                   << FG_BRIGHT_WHITE << "[ " << display;
         int innerW = 30 - (int)display.size();
@@ -451,7 +436,6 @@ void TuiRenderer::renderPre(const std::shared_ptr<HtmlNode>& node) {
     while (std::getline(iss, line)) {
         std::cout << FG_BRIGHT_CYAN << " │ " << RST
                   << BG_BLACK << FG_BRIGHT_GREEN << line;
-        // Pad to right border
         int pad = termWidth - 4 - (int)line.size();
         for (int i = 0; i < pad; i++) std::cout << ' ';
         std::cout << RST << FG_BRIGHT_CYAN << " │" << RST << "\n";
@@ -486,7 +470,6 @@ void TuiRenderer::renderForm(const std::shared_ptr<HtmlNode>& node, int depth) {
 
 void TuiRenderer::renderNav(const std::shared_ptr<HtmlNode>& node, int depth) {
     std::cout << "\n" << BOLD << BG_BLACK << FG_BRIGHT_CYAN << " Navigation " << RST << "\n";
-    // Render nav links inline
     std::cout << "  ";
     bool first = true;
     std::function<void(const std::shared_ptr<HtmlNode>&)> extractLinks;
@@ -532,7 +515,6 @@ void TuiRenderer::renderSection(const std::shared_ptr<HtmlNode>& node, int depth
 }
 
 void TuiRenderer::renderDiv(const std::shared_ptr<HtmlNode>& node, int depth) {
-    // If div has only text, render as paragraph-like
     if (node->children.empty() && !node->text.empty()) {
         auto lines = wordWrap(node->text, termWidth - 4);
         for (auto& ln : lines)
@@ -614,7 +596,6 @@ void TuiRenderer::renderNode(const std::shared_ptr<HtmlNode>& node, int depth, b
         std::cout << BG_YELLOW << FG_BLACK << getNodeText(node) << RST << "\n";
     }
     else {
-        // Unknown tag - just render children / text
         if (!node->text.empty()) std::cout << "  " << node->text << "\n";
         renderChildren(node, depth);
     }
@@ -630,7 +611,6 @@ void TuiRenderer::renderChildren(const std::shared_ptr<HtmlNode>& node, int dept
 void TuiRenderer::render(const std::vector<std::shared_ptr<HtmlNode>>& roots) {
     clearScreen();
 
-    // Status bar at top
     std::cout << BOLD << BG_BRIGHT_BLUE << FG_BRIGHT_WHITE;
     std::cout << " WebC TUI Browser ";
     for (int i = 18; i < termWidth - 1; i++) std::cout << ' ';
@@ -640,7 +620,6 @@ void TuiRenderer::render(const std::vector<std::shared_ptr<HtmlNode>>& roots) {
         renderNode(root, 0);
     }
 
-    // Status bar at bottom
     std::cout << "\n" << BOLD << BG_BRIGHT_BLUE << FG_BRIGHT_WHITE;
     std::cout << " Press Ctrl+C to exit ";
     for (int i = 22; i < termWidth - 1; i++) std::cout << ' ';

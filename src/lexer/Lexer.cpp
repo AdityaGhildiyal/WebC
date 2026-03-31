@@ -27,23 +27,21 @@ void Lexer::skipWhitespace() {
 }
 
 void Lexer::skipComment() {
-    // Single-line comment: //
     if (peek() == '/' && peek(1) == '/') {
-        advance(); // skip first /
-        advance(); // skip second /
+        advance(); 
+        advance(); 
         while (peek() != '\n' && peek() != '\0') {
             advance();
         }
     }
-    // Multi-line comment: /* */
     else if (peek() == '/' && peek(1) == '*') {
-        advance(); // skip /
-        advance(); // skip *
+        advance(); 
+        advance(); 
         while (true) {
-            if (peek() == '\0') break; // EOF
+            if (peek() == '\0') break; 
             if (peek() == '*' && peek(1) == '/') {
-                advance(); // skip *
-                advance(); // skip /
+                advance(); 
+                advance(); 
                 break;
             }
             advance();
@@ -78,7 +76,6 @@ Token Lexer::readIdentifier() {
         val += advance();
     }
     
-    // Check if it's a keyword
     TokenType type;
     if (isKeyword(val, type)) {
         return {type, val, line, startCol};
@@ -94,7 +91,7 @@ Token Lexer::readNumber() {
     
     while (isdigit(peek()) || peek() == '.') {
         if (peek() == '.') {
-            if (hasDecimal) break; // Second decimal point, stop
+            if (hasDecimal) break; 
             hasDecimal = true;
         }
         val += advance();
@@ -105,12 +102,12 @@ Token Lexer::readNumber() {
 
 Token Lexer::readString() {
     int startCol = column;
-    advance(); // Skip opening quote
+    advance(); 
     std::string val;
     
     while (peek() != '"' && peek() != '\0') {
         if (peek() == '\\') {
-            advance(); // Skip escape character
+            advance();
             char escaped = peek();
             switch (escaped) {
                 case 'n': val += '\n'; break;
@@ -126,7 +123,7 @@ Token Lexer::readString() {
         }
     }
     
-    advance(); // Skip closing quote
+    advance(); 
     return {TokenType::STRING, val, line, startCol};
 }
 
@@ -136,7 +133,7 @@ std::vector<Token> Lexer::tokenize() {
     while (pos < src.size()) {
         skipWhitespace();
         
-        // Check for comments
+     
         if (peek() == '/' && (peek(1) == '/' || peek(1) == '*')) {
             skipComment();
             continue;
@@ -147,24 +144,23 @@ std::vector<Token> Lexer::tokenize() {
         
         int startCol = column;
 
-        // Identifiers and keywords
+
         if (isalpha(c) || c == '_') {
             tokens.push_back(readIdentifier());
         }
-        // Numbers
+
         else if (isdigit(c)) {
             tokens.push_back(readNumber());
         }
-        // Strings
+
         else if (c == '"') {
             tokens.push_back(readString());
         }
-        // Multi-character operators and single-character tokens
         else {
             char current = advance();
             
             switch (current) {
-                // Check for multi-character operators
+
                 case '=':
                     if (peek() == '=') {
                         advance();
@@ -188,8 +184,6 @@ std::vector<Token> Lexer::tokenize() {
                         advance();
                         tokens.push_back({TokenType::LESS_EQUALS, "<=", line, startCol});
                     } else {
-                        // Could be TAG_OPEN or LESS_THAN - context dependent
-                        // For now, we'll use TAG_OPEN for HTML compatibility
                         tokens.push_back({TokenType::TAG_OPEN, "<", line, startCol});
                     }
                     break;
@@ -199,7 +193,6 @@ std::vector<Token> Lexer::tokenize() {
                         advance();
                         tokens.push_back({TokenType::GREATER_EQUALS, ">=", line, startCol});
                     } else {
-                        // Could be TAG_CLOSE or GREATER_THAN
                         tokens.push_back({TokenType::TAG_CLOSE, ">", line, startCol});
                     }
                     break;
@@ -222,7 +215,6 @@ std::vector<Token> Lexer::tokenize() {
                     }
                     break;
                 
-                // Single-character tokens
                 case '/': tokens.push_back({TokenType::SLASH, "/", line, startCol}); break;
                 case '+': tokens.push_back({TokenType::PLUS, "+", line, startCol}); break;
                 case '-': tokens.push_back({TokenType::MINUS, "-", line, startCol}); break;

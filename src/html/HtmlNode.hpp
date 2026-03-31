@@ -5,12 +5,11 @@
 #include <memory>
 #include <cstdio>
 
-// HTML Element Node — stores tag, attributes, text, and children
 class HtmlNode {
 public:
-    std::string tag;                          // "div", "h1", "p", etc.
-    std::map<std::string, std::string> attrs; // All attributes: id, class, href, style...
-    std::string text;                         // Direct text content
+    std::string tag;                          
+    std::map<std::string, std::string> attrs;
+    std::string text;                         
     std::vector<std::shared_ptr<HtmlNode>> children;
 
     HtmlNode() = default;

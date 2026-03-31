@@ -31,7 +31,6 @@ Token Parser::expect(TokenType type, const std::string& message) {
                             ", column " + std::to_string(peek().column));
 }
 
-// Entry point: Program -> (Tag | Statement)*
 std::vector<std::shared_ptr<ASTNode>> Parser::parseProgram() {
     std::vector<std::shared_ptr<ASTNode>> nodes;
     while (!isAtEnd()) {
@@ -41,62 +40,50 @@ std::vector<std::shared_ptr<ASTNode>> Parser::parseProgram() {
 }
 
 std::shared_ptr<ASTNode> Parser::parseNode() {
-    // HTML tag
     if (peek().type == TokenType::TAG_OPEN) {
         return parseTag();
     }
-    // if statement
     if (peek().type == TokenType::IF) {
         return parseIfStatement();
     }
-    // for loop
     if (peek().type == TokenType::FOR) {
         return parseForStatement();
     }
-    // while loop
     if (peek().type == TokenType::WHILE) {
         return parseWhileStatement();
     }
-    // Statement (let, const, assignment)
     if (peek().type == TokenType::LET || peek().type == TokenType::CONST) {
         return parseStatement();
     }
-    // Bare assignment: IDENTIFIER =
     if (peek().type == TokenType::IDENTIFIER &&
         pos + 1 < tokens.size() &&
         tokens[pos + 1].type == TokenType::EQUALS) {
         return parseStatement();
     }
-    // Default to expression
     return parseExpression();
 }
 
-// Tag -> < IDENTIFIER (id = STRING)? > (Node)* < / IDENTIFIER >
 std::shared_ptr<ASTNode> Parser::parseTag() {
     expect(TokenType::TAG_OPEN, "Expected '<'");
     std::string name = expect(TokenType::IDENTIFIER, "Expected tag name").value;
     
     std::string id = "";
-    // Parse all attributes: extract 'id', skip everything else
     while (!isAtEnd() && peek().type == TokenType::IDENTIFIER) {
-        std::string attrName = advance().value; // consume attribute name
+        std::string attrName = advance().value;
         if (peek().type == TokenType::EQUALS) {
-            advance(); // consume '='
+            advance(); 
             if (peek().type == TokenType::STRING) {
                 std::string val = advance().value;
                 if (attrName == "id") id = val;
-                // other attributes (class, href, lang, style…) are ignored in WebC
             } else if (peek().type == TokenType::NUMBER || peek().type == TokenType::IDENTIFIER) {
-                advance(); // skip bare-word / numeric value
+                advance(); 
             }
         }
-        // boolean attribute (no '=') — name already consumed, continue
     }
 
     expect(TokenType::TAG_CLOSE, "Expected '>'");
     auto node = std::make_shared<TagNode>(name, id);
 
-    // Parse children until we hit </
     while (!isAtEnd() && 
            !(peek().type == TokenType::TAG_OPEN && 
              pos + 1 < tokens.size() && 
@@ -104,7 +91,6 @@ std::shared_ptr<ASTNode> Parser::parseTag() {
         node->children.push_back(parseNode());
     }
 
-    // Closing tag
     expect(TokenType::TAG_OPEN, "Expected '</'");
     expect(TokenType::SLASH, "Expected '/'");
     expect(TokenType::IDENTIFIER, "Expected closing tag name");
@@ -114,7 +100,6 @@ std::shared_ptr<ASTNode> Parser::parseTag() {
 }
 
 // ─── Helper: parse a brace-delimited block of nodes ────────────────────────
-// Expects the leading '{' to still be the current token.
 static std::vector<std::shared_ptr<ASTNode>> parseBlock(Parser& p,
     std::function<std::shared_ptr<ASTNode>()> parseNodeFn,
     std::function<bool()> isAtEndFn,
@@ -122,23 +107,20 @@ static std::vector<std::shared_ptr<ASTNode>> parseBlock(Parser& p,
     std::function<Token()> advanceFn)
 {
     (void)p;
-    advanceFn(); // consume '{'
+    advanceFn(); 
     std::vector<std::shared_ptr<ASTNode>> body;
     while (!isAtEndFn() && peekFn().type != TokenType::RBRACE) {
         body.push_back(parseNodeFn());
     }
-    if (peekFn().type == TokenType::RBRACE) advanceFn(); // consume '}'
+    if (peekFn().type == TokenType::RBRACE) advanceFn(); 
     return body;
 }
 
-// Statement -> VarDecl | Assignment
 std::shared_ptr<ASTNode> Parser::parseStatement() {
     if (peek().type == TokenType::LET || peek().type == TokenType::CONST) {
         return parseVarDecl();
     }
-    // Could be assignment
     if (peek().type == TokenType::IDENTIFIER) {
-        // Look ahead to see if it's an assignment
         if (pos + 1 < tokens.size() && tokens[pos + 1].type == TokenType::EQUALS) {
             return parseAssignment();
         }
@@ -146,9 +128,8 @@ std::shared_ptr<ASTNode> Parser::parseStatement() {
     return parseExpression();
 }
 
-// VarDecl -> (let|const) IDENTIFIER = Expression ;
 std::shared_ptr<ASTNode> Parser::parseVarDecl() {
-    advance(); // consume 'let' or 'const'
+    advance(); 
     std::string name = expect(TokenType::IDENTIFIER, "Expected variable name").value;
     expect(TokenType::EQUALS, "Expected '='");
     auto value = parseExpression();
@@ -156,14 +137,12 @@ std::shared_ptr<ASTNode> Parser::parseVarDecl() {
     return std::make_shared<VarDeclNode>(name, value);
 }
 
-// IfStatement -> if ( Expression ) { Node* } ( else { Node* } )?
 std::shared_ptr<ASTNode> Parser::parseIfStatement() {
-    advance(); // consume 'if'
+    advance(); 
     expect(TokenType::LPAREN, "Expected '(' after 'if'");
     auto cond = parseExpression();
     expect(TokenType::RPAREN, "Expected ')' after if condition");
 
-    // then-branch
     expect(TokenType::LBRACE, "Expected '{' after if condition");
     auto ifNode = std::make_shared<IfNode>(cond);
     while (!isAtEnd() && peek().type != TokenType::RBRACE) {
@@ -171,9 +150,8 @@ std::shared_ptr<ASTNode> Parser::parseIfStatement() {
     }
     expect(TokenType::RBRACE, "Expected '}' to close if block");
 
-    // optional else-branch
     if (!isAtEnd() && peek().type == TokenType::ELSE) {
-        advance(); // consume 'else'
+        advance();
         expect(TokenType::LBRACE, "Expected '{' after 'else'");
         while (!isAtEnd() && peek().type != TokenType::RBRACE) {
             ifNode->elseBranch.push_back(parseNode());
@@ -184,38 +162,32 @@ std::shared_ptr<ASTNode> Parser::parseIfStatement() {
     return ifNode;
 }
 
-// ForStatement -> for ( (let|const)? IDENT = Expr ; Expr ; IDENT = Expr ) { Node* }
 std::shared_ptr<ASTNode> Parser::parseForStatement() {
-    advance(); // consume 'for'
+    advance(); 
     expect(TokenType::LPAREN, "Expected '(' after 'for'");
 
-    // init: let i = 0;  (the semicolon is consumed inside parseVarDecl)
     std::shared_ptr<ASTNode> init;
     if (peek().type == TokenType::LET || peek().type == TokenType::CONST) {
-        init = parseVarDecl(); // consumes 'let i = 0 ;'
+        init = parseVarDecl(); 
     } else {
-        init = parseAssignment(); // e.g. i = 0 ;
+        init = parseAssignment(); 
     }
 
-    // condition: i <= 3 ;
     auto cond = parseExpression();
     expect(TokenType::SEMICOLON, "Expected ';' after for-condition");
 
-    // increment: i = i + 1  (no semicolon — closed by ')')
     std::shared_ptr<ASTNode> inc;
     if (peek().type == TokenType::IDENTIFIER &&
         pos + 1 < tokens.size() &&
         tokens[pos + 1].type == TokenType::EQUALS) {
-        std::string name = advance().value; // IDENT
-        advance();                          // consume '='
+        std::string name = advance().value;
+        advance();                          
         auto val = parseExpression();
         inc = std::make_shared<AssignmentNode>(name, val);
-        // no semicolon expected here — the ')' closes the header
     }
 
     expect(TokenType::RPAREN, "Expected ')' to close for header");
 
-    // body
     expect(TokenType::LBRACE, "Expected '{' to open for body");
     auto forNode = std::make_shared<ForNode>(init, cond, inc);
     while (!isAtEnd() && peek().type != TokenType::RBRACE) {
@@ -226,9 +198,8 @@ std::shared_ptr<ASTNode> Parser::parseForStatement() {
     return forNode;
 }
 
-// WhileStatement -> while ( Expression ) { Node* }
 std::shared_ptr<ASTNode> Parser::parseWhileStatement() {
-    advance(); // consume 'while'
+    advance();
     expect(TokenType::LPAREN, "Expected '(' after 'while'");
     auto cond = parseExpression();
     expect(TokenType::RPAREN, "Expected ')' after while condition");
@@ -243,7 +214,6 @@ std::shared_ptr<ASTNode> Parser::parseWhileStatement() {
     return whileNode;
 }
 
-// Assignment -> IDENTIFIER = Expression ;
 std::shared_ptr<ASTNode> Parser::parseAssignment() {
     std::string name = expect(TokenType::IDENTIFIER, "Expected variable name").value;
     expect(TokenType::EQUALS, "Expected '='");
@@ -252,7 +222,6 @@ std::shared_ptr<ASTNode> Parser::parseAssignment() {
     return std::make_shared<AssignmentNode>(name, value);
 }
 
-// Expression -> Comparison ( (&&|||) Comparison )*
 std::shared_ptr<ASTNode> Parser::parseExpression() {
     auto left = parseComparison();
     
@@ -266,13 +235,10 @@ std::shared_ptr<ASTNode> Parser::parseExpression() {
     return left;
 }
 
-// Comparison -> Term ( (==|!=|<|>|<=|>=) Term )*
 std::shared_ptr<ASTNode> Parser::parseComparison() {
     auto left = parseTerm();
     
-    // NOTE: TAG_OPEN (<) and TAG_CLOSE (>) are intentionally NOT used here —
-    // they denote HTML tags, not comparison operators.
-    // Use dedicated LESS_THAN / GREATER_THAN tokens for JS comparisons.
+
     while (peek().type == TokenType::DOUBLE_EQUALS ||
            peek().type == TokenType::NOT_EQUALS     ||
            peek().type == TokenType::LESS_THAN      ||
@@ -296,7 +262,6 @@ std::shared_ptr<ASTNode> Parser::parseComparison() {
     return left;
 }
 
-// Term -> Factor ( (+|-) Factor )*
 std::shared_ptr<ASTNode> Parser::parseTerm() {
     auto left = parseFactor();
     
@@ -310,7 +275,6 @@ std::shared_ptr<ASTNode> Parser::parseTerm() {
     return left;
 }
 
-// Factor -> Primary ( (*|/) Primary )*
 std::shared_ptr<ASTNode> Parser::parseFactor() {
     auto left = parsePrimary();
     
@@ -324,29 +288,24 @@ std::shared_ptr<ASTNode> Parser::parseFactor() {
     return left;
 }
 
-// Primary -> NUMBER | STRING | IDENTIFIER | ( Expression )
 std::shared_ptr<ASTNode> Parser::parsePrimary() {
-    // Number literal
     if (peek().type == TokenType::NUMBER) {
         double value = std::stod(advance().value);
         return std::make_shared<NumberNode>(value);
     }
     
-    // String literal
     if (peek().type == TokenType::STRING) {
         std::string value = advance().value;
         return std::make_shared<StringNode>(value);
     }
     
-    // Identifier (variable reference)
     if (peek().type == TokenType::IDENTIFIER) {
         std::string name = advance().value;
         return std::make_shared<IdentifierNode>(name);
     }
     
-    // Parenthesized expression
     if (peek().type == TokenType::LPAREN) {
-        advance(); // consume '('
+        advance(); 
         auto expr = parseExpression();
         expect(TokenType::RPAREN, "Expected ')' after expression");
         return expr;

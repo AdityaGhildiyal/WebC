@@ -49,14 +49,12 @@ static bool endsWith(const std::string& s, const std::string& suffix) {
 static void listHtmlFiles(const std::string& dir, std::vector<std::string>& out) {
 #ifdef _WIN32
     WIN32_FIND_DATAA fd;
-    // .html files
     HANDLE h1 = FindFirstFileA((dir + "\\*.html").c_str(), &fd);
     if (h1 != INVALID_HANDLE_VALUE) {
         do { out.push_back(dir + "\\" + fd.cFileName); }
         while (FindNextFileA(h1, &fd));
         FindClose(h1);
     }
-    // .webc files
     HANDLE h2 = FindFirstFileA((dir + "\\*.webc").c_str(), &fd);
     if (h2 != INVALID_HANDLE_VALUE) {
         do { out.push_back(dir + "\\" + fd.cFileName); }
@@ -82,15 +80,12 @@ static void renderWebc(const std::string& path, TuiRenderer& renderer) {
 
     std::string src = readFile(path);
 
-    // 1. Lex
     Lexer lexer(src);
     auto tokens = lexer.tokenize();
 
-    // 2. Parse
     Parser parser(tokens);
     auto ast = parser.parseProgram();
 
-    // 3. Semantic analysis (warn on errors but keep going)
     try {
         SemanticAnalyzer analyzer;
         analyzer.analyze(ast);
@@ -98,11 +93,9 @@ static void renderWebc(const std::string& path, TuiRenderer& renderer) {
         std::cerr << YELLOW << "  [Semantic Warning] " << e.what() << RST << "\n";
     }
 
-    // 4. Generate HtmlNode tree (our new backend)
     HtmlNodeGen gen;
     auto nodes = gen.generate(ast);
 
-    // 5. Render
     renderer.render(nodes);
 }
 
@@ -118,7 +111,6 @@ static void renderHtml(const std::string& path, TuiRenderer& renderer) {
 // ─── Main ────────────────────────────────────────────────
 int main(int argc, char* argv[]) {
 #ifdef _WIN32
-    // Set console output to UTF-8 so box-drawing characters display correctly
     SetConsoleOutputCP(CP_UTF8);
 #endif
 
@@ -164,7 +156,6 @@ int main(int argc, char* argv[]) {
             else
                 renderHtml(path, renderer);
 
-            // Pause between multiple files
             if (files.size() > 1 && i + 1 < files.size()) {
                 std::cout << YELLOW
                           << "\n[" << (i+1) << "/" << files.size()

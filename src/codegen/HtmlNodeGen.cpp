@@ -6,13 +6,11 @@
 // ─── Helpers ───────────────────────────────────────────────────────────────
 
 std::string HtmlNodeGen::fmtNum(double v) const {
-    // Print integers without decimal point: 42 not 42.000000
     if (v == std::floor(v) && std::abs(v) < 1e15) {
         std::ostringstream ss;
         ss << static_cast<long long>(v);
         return ss.str();
     }
-    // For floats, up to 4 significant decimal places, strip trailing zeros
     std::ostringstream ss;
     ss << v;
     return ss.str();
@@ -45,7 +43,6 @@ double HtmlNodeGen::evalNum(std::shared_ptr<ASTNode> node) {
     }
 
     if (auto str = std::dynamic_pointer_cast<StringNode>(node)) {
-        // Try to convert string to number
         try { return std::stod(str->value); } catch (...) { return 0.0; }
     }
 
@@ -57,25 +54,22 @@ bool HtmlNodeGen::evalCond(std::shared_ptr<ASTNode> node) {
     if (!node) return false;
 
     if (auto bin = std::dynamic_pointer_cast<BinaryOpNode>(node)) {
-        // Logical operators — recurse
         if (bin->op == '&') return evalCond(bin->left) && evalCond(bin->right);
         if (bin->op == '|') return evalCond(bin->left) || evalCond(bin->right);
 
-        // Comparison operators
         double L = evalNum(bin->left);
         double R = evalNum(bin->right);
         switch (bin->op) {
-            case '=': return L == R;          // '==' mapped to '='
-            case '!': return L != R;          // '!=' mapped to '!'
+            case '=': return L == R;          
+            case '!': return L != R;          
             case '<': return L <  R;
             case '>': return L >  R;
-            case 'L': return L <= R;          // '<=' mapped to 'L'
-            case 'G': return L >= R;          // '>=' mapped to 'G'
+            case 'L': return L <= R;          
+            case 'G': return L >= R;         
             default:  return evalNum(node) != 0.0;
         }
     }
 
-    // Plain number / variable — truthy if non-zero
     return evalNum(node) != 0.0;
 }
 
@@ -89,16 +83,14 @@ std::string HtmlNodeGen::evalStr(std::shared_ptr<ASTNode> node) {
         return fmtNum(num->value);
 
     if (auto id = std::dynamic_pointer_cast<IdentifierNode>(node)) {
-        // Try string variable first, then numeric
         auto sit = strVars.find(id->name);
         if (sit != strVars.end()) return sit->second;
         auto nit = numVars.find(id->name);
         if (nit != numVars.end()) return fmtNum(nit->second);
-        return id->name; // unresolved identifier — show the name itself
+        return id->name; 
     }
 
     if (auto bin = std::dynamic_pointer_cast<BinaryOpNode>(node)) {
-        // Numeric binary op → format as string
         return fmtNum(evalNum(node));
     }
 
@@ -108,16 +100,12 @@ std::string HtmlNodeGen::evalStr(std::shared_ptr<ASTNode> node) {
 // ─── Statement Executor ────────────────────────────────────────────────────
 
 void HtmlNodeGen::execStatement(std::shared_ptr<ASTNode> node) {
-    // let / const x = expr;
     if (auto decl = std::dynamic_pointer_cast<VarDeclNode>(node)) {
         if (!decl->initValue) return;
 
-        // Decide storage type based on the initialiser
         if (std::dynamic_pointer_cast<StringNode>(decl->initValue)) {
             strVars[decl->varName] = evalStr(decl->initValue);
         } else {
-            // For string variables being assigned a non-string expression
-            // that resolves via string lookup, keep as string
             auto it = strVars.find(decl->varName);
             if (it != strVars.end()) {
                 strVars[decl->varName] = evalStr(decl->initValue);
@@ -128,9 +116,7 @@ void HtmlNodeGen::execStatement(std::shared_ptr<ASTNode> node) {
         return;
     }
 
-    // x = expr;  (re-assignment)
     if (auto assign = std::dynamic_pointer_cast<AssignmentNode>(node)) {
-        // Update whichever map already holds the variable
         if (strVars.count(assign->varName)) {
             strVars[assign->varName] = evalStr(assign->value);
         } else {
@@ -140,7 +126,6 @@ void HtmlNodeGen::execStatement(std::shared_ptr<ASTNode> node) {
     }
 }
 
-// evalIf — evaluate an if/else node, appending resulting HtmlNodes to parent
 void HtmlNodeGen::evalIf(std::shared_ptr<IfNode> node,
                           std::shared_ptr<HtmlNode> parent) {
     bool result = evalCond(node->condition);
@@ -148,28 +133,21 @@ void HtmlNodeGen::evalIf(std::shared_ptr<IfNode> node,
     generateInto(branch, parent);
 }
 
-// evalFor — execute a for-loop at compile time, appending each iteration's
-// HtmlNodes to the parent.
+
 void HtmlNodeGen::evalFor(std::shared_ptr<ForNode> node,
                            std::shared_ptr<HtmlNode> parent) {
-    // Execute init statement (e.g., let i = 1)
     if (node->init) execStatement(node->init);
 
-    // Safety cap: never run more than 10 000 iterations
     int guard = 0;
     while (guard++ < 10000) {
-        // Evaluate condition
         if (!node->condition || !evalCond(node->condition)) break;
 
-        // Generate body nodes for this iteration
         generateInto(node->body, parent);
 
-        // Execute increment (e.g., i = i + 1)
         if (node->increment) execStatement(node->increment);
     }
 }
 
-// evalWhile — execute a while-loop at compile time
 void HtmlNodeGen::evalWhile(std::shared_ptr<WhileNode> node,
                              std::shared_ptr<HtmlNode> parent) {
     int guard = 0;
@@ -179,8 +157,7 @@ void HtmlNodeGen::evalWhile(std::shared_ptr<WhileNode> node,
     }
 }
 
-// generateInto — walk a list of AST nodes and push resulting HtmlNode
-// children into 'parent'. Used by visitTag() and control-flow evaluators.
+
 void HtmlNodeGen::generateInto(const std::vector<std::shared_ptr<ASTNode>>& nodes,
                                 std::shared_ptr<HtmlNode> parent) {
     std::string textBuf;
@@ -197,34 +174,28 @@ void HtmlNodeGen::generateInto(const std::vector<std::shared_ptr<ASTNode>>& node
     };
 
     for (auto& child : nodes) {
-        // Sub-tag
         if (auto childTag = std::dynamic_pointer_cast<TagNode>(child)) {
             flushText();
             auto childNode = visitTag(childTag);
             if (childNode) parent->children.push_back(childNode);
         }
-        // if statement
         else if (auto ifNode = std::dynamic_pointer_cast<IfNode>(child)) {
             flushText();
             evalIf(ifNode, parent);
         }
-        // for loop
         else if (auto forNode = std::dynamic_pointer_cast<ForNode>(child)) {
             flushText();
             evalFor(forNode, parent);
         }
-        // while loop
         else if (auto whileNode = std::dynamic_pointer_cast<WhileNode>(child)) {
             flushText();
             evalWhile(whileNode, parent);
         }
-        // JS statement
         else if (std::dynamic_pointer_cast<VarDeclNode>(child) ||
                  std::dynamic_pointer_cast<AssignmentNode>(child)) {
             flushText();
             execStatement(child);
         }
-        // Inline expression → text
         else {
             std::string piece = evalStr(child);
             if (!piece.empty()) textBuf += piece;
@@ -238,14 +209,12 @@ void HtmlNodeGen::generateInto(const std::vector<std::shared_ptr<ASTNode>>& node
 std::shared_ptr<HtmlNode> HtmlNodeGen::visitTag(std::shared_ptr<TagNode> tag) {
     auto node = std::make_shared<HtmlNode>(tag->tagName);
 
-    // Carry over the id attribute
     if (!tag->id.empty()) {
         node->attrs["id"] = tag->id;
         domElements[tag->id] = node;
     }
 
-    // Delegate all child processing to generateInto so that
-    // if/for nodes inside tags are handled uniformly.
+
     generateInto(tag->children, node);
 
     return node;
@@ -256,14 +225,12 @@ std::shared_ptr<HtmlNode> HtmlNodeGen::visitTag(std::shared_ptr<TagNode> tag) {
 std::vector<std::shared_ptr<HtmlNode>> HtmlNodeGen::generate(
     const std::vector<std::shared_ptr<ASTNode>>& nodes)
 {
-    // Reset interpreter state for a fresh compilation
     numVars.clear();
     strVars.clear();
     domElements.clear();
 
     std::vector<std::shared_ptr<HtmlNode>> roots;
 
-    // Use a dummy root wrapper so generateInto can append top-level nodes
     auto wrapper = std::make_shared<HtmlNode>("__root__");
 
     for (auto& node : nodes) {
@@ -283,7 +250,6 @@ std::vector<std::shared_ptr<HtmlNode>> HtmlNodeGen::generate(
             for (auto& c : wrapper->children) roots.push_back(c);
             wrapper->children.clear();
         } else {
-            // Top-level JS statement
             execStatement(node);
         }
     }

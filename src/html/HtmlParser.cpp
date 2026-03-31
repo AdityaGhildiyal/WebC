@@ -23,10 +23,9 @@ void HtmlParser::skipWhitespace() {
 }
 
 void HtmlParser::skipComment() {
-    // Already consumed '<', '!', '-', '-'
     while (!isAtEnd()) {
         if (peek() == '-' && peek(1) == '-' && peek(2) == '>') {
-            advance(); advance(); advance(); // consume -->
+            advance(); advance(); advance(); 
             return;
         }
         advance();
@@ -61,18 +60,17 @@ std::string HtmlParser::readAttrName() {
 std::string HtmlParser::readAttrValue() {
     char quote = peek();
     if (quote == '"' || quote == '\'') {
-        advance(); // consume opening quote
+        advance(); 
         std::string val;
         while (!isAtEnd() && peek() != quote) {
-            // handle HTML entities minimally
             if (peek() == '&') {
                 std::string entity;
                 size_t start = pos;
-                advance(); // &
+                advance();
                 while (!isAtEnd() && peek() != ';' && !isspace(peek()) && pos - start < 10)
                     entity += advance();
                 if (peek() == ';') {
-                    advance(); // ;
+                    advance(); 
                     if      (entity == "amp")  val += '&';
                     else if (entity == "lt")   val += '<';
                     else if (entity == "gt")   val += '>';
@@ -87,10 +85,9 @@ std::string HtmlParser::readAttrValue() {
                 val += advance();
             }
         }
-        if (!isAtEnd()) advance(); // closing quote
+        if (!isAtEnd()) advance(); 
         return val;
     }
-    // bare-word value (no quotes)
     std::string val;
     while (!isAtEnd() && !isspace(peek()) && peek() != '>' && peek() != '/')
         val += advance();
@@ -103,18 +100,16 @@ void HtmlParser::parseAttributes(std::shared_ptr<HtmlNode>& node) {
         if (peek() == '>' || peek() == '/' || isAtEnd()) break;
 
         std::string name = readAttrName();
-        if (name.empty()) { advance(); continue; } // skip stray chars
+        if (name.empty()) { advance(); continue; } 
 
-        // Convert attribute name to lowercase
         std::transform(name.begin(), name.end(), name.begin(), ::tolower);
 
         skipWhitespace();
         if (peek() == '=') {
-            advance(); // consume '='
+            advance(); 
             skipWhitespace();
             node->attrs[name] = readAttrValue();
         } else {
-            // Boolean attribute (e.g. checked, disabled)
             node->attrs[name] = "true";
         }
     }
@@ -124,7 +119,6 @@ std::string HtmlParser::readText() {
     std::string text;
     while (!isAtEnd() && peek() != '<') {
         if (peek() == '&') {
-            // HTML entity decode
             std::string entity;
             size_t start = pos;
             advance();
@@ -145,7 +139,6 @@ std::string HtmlParser::readText() {
             text += advance();
         }
     }
-    // Trim leading/trailing whitespace from text
     size_t start = text.find_first_not_of(" \t\n\r");
     if (start == std::string::npos) return "";
     size_t end = text.find_last_not_of(" \t\n\r");
@@ -153,33 +146,27 @@ std::string HtmlParser::readText() {
 }
 
 std::shared_ptr<HtmlNode> HtmlParser::parseElement() {
-    // We're right after '<'
     
-    // HTML comment: <!-- ... -->
     if (peek() == '!' && peek(1) == '-' && peek(2) == '-') {
-        advance(); advance(); advance(); // consume !--
+        advance(); advance(); advance(); 
         skipComment();
         return nullptr;
     }
 
-    // DOCTYPE: <!DOCTYPE ...>
     if (peek() == '!') {
         while (!isAtEnd() && peek() != '>') advance();
-        if (!isAtEnd()) advance(); // '>'
+        if (!isAtEnd()) advance(); 
         return nullptr;
     }
 
-    // Closing tag: </tagname>  — return nullptr, caller will stop
     if (peek() == '/') {
         while (!isAtEnd() && peek() != '>') advance();
-        if (!isAtEnd()) advance(); // '>'
+        if (!isAtEnd()) advance(); 
         return nullptr;
     }
 
-    // Opening tag
     std::string tagName = readTagName();
     if (tagName.empty()) {
-        // Stray '<', treat it as text — skip
         return nullptr;
     }
     std::transform(tagName.begin(), tagName.end(), tagName.begin(), ::tolower);
@@ -187,51 +174,40 @@ std::shared_ptr<HtmlNode> HtmlParser::parseElement() {
     auto node = std::make_shared<HtmlNode>(tagName);
     parseAttributes(node);
 
-    // Self-closing with />
     if (peek() == '/') {
-        advance(); // '/'
-        if (peek() == '>') advance(); // '>'
+        advance(); 
+        if (peek() == '>') advance(); 
         return node;
     }
 
-    // End of opening tag
     if (peek() == '>') advance();
 
-    // Self-closing by tag name (br, img, etc.)
     if (isSelfClosing(tagName)) return node;
 
-    // Parse children until we hit </tagname> or EOF
     while (!isAtEnd()) {
         skipWhitespace();
         if (isAtEnd()) break;
 
         if (peek() == '<') {
-            advance(); // consume '<'
+            advance();
 
-            // Closing tag for THIS element?
             if (peek() == '/') {
-                // Peek at the closing tag name
-                advance(); // '/'
+                advance();
                 std::string closeName = readTagName();
                 std::transform(closeName.begin(), closeName.end(), closeName.begin(), ::tolower);
-                // Consume rest of the tag
                 while (!isAtEnd() && peek() != '>') advance();
-                if (!isAtEnd()) advance(); // '>'
+                if (!isAtEnd()) advance(); 
 
                 if (closeName == tagName || closeName.empty()) {
-                    break; // matched closing tag
+                    break; 
                 }
-                // Mismatched tag — treat as closing the current element anyway
                 break;
             }
 
-            // Child element
             auto child = parseElement();
             if (child) node->children.push_back(child);
         } else {
-            // Text content — store as an ordered #text child node so that
-            // inline elements (strong, em, code…) stay in the right position
-            // relative to surrounding text.
+
             std::string text = readText();
             if (!text.empty()) {
                 auto textNode = std::make_shared<HtmlNode>("#text");
@@ -241,8 +217,6 @@ std::shared_ptr<HtmlNode> HtmlParser::parseElement() {
         }
     }
 
-    // Optimisation: if every child is a #text node, collapse into node->text
-    // so the rest of the renderer can use the simpler node->text path.
     bool allText = !node->children.empty();
     for (auto& ch : node->children)
         if (ch->tag != "#text") { allText = false; break; }
@@ -265,11 +239,10 @@ std::shared_ptr<HtmlNode> HtmlParser::parseNode() {
     if (isAtEnd()) return nullptr;
 
     if (peek() == '<') {
-        advance(); // consume '<'
+        advance(); 
         return parseElement();
     }
 
-    // Top-level text (rare but handle it)
     std::string text = readText();
     if (!text.empty()) {
         auto node = std::make_shared<HtmlNode>("#text");

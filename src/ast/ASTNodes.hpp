@@ -4,14 +4,12 @@
 #include <memory>
 #include <cstdio>
 
-// Base class for all nodes in the tree
 class ASTNode {
 public:
     virtual ~ASTNode() = default;
-    virtual void debugPrint(int indent) = 0; // Helper to visualize the tree
+    virtual void debugPrint(int indent) = 0; 
 };
 
-// 1. HTML Element Node (e.g., <div id="app">)
 class TagNode : public ASTNode {
 public:
     std::string tagName;
@@ -29,7 +27,6 @@ public:
     }
 };
 
-// 2. Number Node (e.g., 10, 5.5)
 class NumberNode : public ASTNode {
 public:
     double value;
@@ -41,7 +38,6 @@ public:
     }
 };
 
-// 3. Binary Operation Node (e.g., x + y)
 class BinaryOpNode : public ASTNode {
 public:
     char op;
@@ -59,7 +55,6 @@ public:
     }
 };
 
-// 4. Variable Declaration Node (e.g., let x = 10)
 class VarDeclNode : public ASTNode {
 public:
     std::string varName;
@@ -75,7 +70,6 @@ public:
     }
 };
 
-// 5. Identifier Node (e.g., variable reference like "x" or "count")
 class IdentifierNode : public ASTNode {
 public:
     std::string name;
@@ -87,7 +81,6 @@ public:
     }
 };
 
-// 6. String Literal Node (e.g., "hello world")
 class StringNode : public ASTNode {
 public:
     std::string value;
@@ -99,7 +92,6 @@ public:
     }
 };
 
-// 7. Function Declaration Node (e.g., function add(a, b) { ... })
 class FunctionNode : public ASTNode {
 public:
     std::string name;
@@ -120,7 +112,6 @@ public:
     }
 };
 
-// 8. If Statement Node (e.g., if (condition) { ... } else { ... })
 class IfNode : public ASTNode {
 public:
     std::shared_ptr<ASTNode> condition;
@@ -146,7 +137,6 @@ public:
     }
 };
 
-// 9. Return Statement Node (e.g., return x + 5;)
 class ReturnNode : public ASTNode {
 public:
     std::shared_ptr<ASTNode> value;
@@ -160,7 +150,6 @@ public:
     }
 };
 
-// 10. Assignment Node (e.g., x = 10)
 class AssignmentNode : public ASTNode {
 public:
     std::string varName;
@@ -176,12 +165,11 @@ public:
     }
 };
 
-// 11. For Loop Node (e.g., for (let i = 0; i < 3; i = i + 1) { ... })
 class ForNode : public ASTNode {
 public:
-    std::shared_ptr<ASTNode> init;       // e.g., let i = 0
-    std::shared_ptr<ASTNode> condition;  // e.g., i < 3
-    std::shared_ptr<ASTNode> increment;  // e.g., i = i + 1
+    std::shared_ptr<ASTNode> init;       
+    std::shared_ptr<ASTNode> condition;  
+    std::shared_ptr<ASTNode> increment;  
     std::vector<std::shared_ptr<ASTNode>> body;
 
     ForNode(std::shared_ptr<ASTNode> i,
@@ -199,7 +187,6 @@ public:
     }
 };
 
-// 12. While Loop Node (e.g., while (count <= 5) { ... })
 class WhileNode : public ASTNode {
 public:
     std::shared_ptr<ASTNode> condition;

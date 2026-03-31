@@ -34,7 +34,6 @@ Makefile
 *.la
 
 # Executables
-*.exe
 *.out
 *.app
 

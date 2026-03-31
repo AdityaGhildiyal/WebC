@@ -17,23 +17,20 @@ struct Symbol {
     std::string name;
     SymbolType type;
     int line;
-    bool isConst = false;  // Track if variable is const
+    bool isConst = false;  
 };
 
 class SymbolTable {
 public:
     SymbolTable() {
-        // Start with global scope
         scopes.push_back({});
     }
 
-    // Push a new scope (e.g., inside a function or block)
     void pushScope() {
         scopes.push_back({});
         std::cout << "[SymbolTable] Pushed new scope (depth: " << scopes.size() << ")\n";
     }
 
-    // Pop the current scope
     void popScope() {
         if (scopes.size() > 1) {
             scopes.pop_back();
@@ -41,7 +38,6 @@ public:
         }
     }
 
-    // Define a variable in the current scope
     void define(const std::string& name, SymbolType type, int line, bool isConst = false) {
         if (scopes.back().count(name)) {
             throw std::runtime_error("Semantic Error: Symbol '" + name + 
@@ -52,7 +48,6 @@ public:
                   << ", line: " << line << ")\n";
     }
 
-    // Look up a variable (searching from inner scope to outer)
     Symbol lookup(const std::string& name) {
         for (auto it = scopes.rbegin(); it != scopes.rend(); ++it) {
             if (it->count(name)) {
@@ -62,7 +57,6 @@ public:
         throw std::runtime_error("Semantic Error: Undefined symbol '" + name + "'");
     }
 
-    // Check if a symbol exists (without throwing)
     bool exists(const std::string& name) {
         for (auto it = scopes.rbegin(); it != scopes.rend(); ++it) {
             if (it->count(name)) return true;
@@ -70,12 +64,10 @@ public:
         return false;
     }
 
-    // Get current scope depth
     size_t getScopeDepth() const {
         return scopes.size();
     }
 
-    // Print all symbols in all scopes (for debugging)
     void printAllSymbols() {
         std::cout << "\n[SymbolTable] All Symbols:\n";
         for (size_t i = 0; i < scopes.size(); i++) {
