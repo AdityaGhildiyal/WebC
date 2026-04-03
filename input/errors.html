@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Error and Special Cases Demo</title>
+</head>
+<body>
+    <h1>Testing HTML Parser Edge Cases</h1>
+
+    <!-- 1. Missing closing tags (implicitly closed at the end or parent element) -->
+    <div>
+        <p>This paragraph has no closing tag.
+        <div>Another div starts before the paragraph is closed.</div>
+    </div>
+
+    <!-- 2. Interleaved tags -->
+    <b><i>This text is bold and italic.</b></i>
+
+    <!-- 3. Unquoted and badly formatted attributes -->
+    <a href=https://example.com class=link-class id=bad-attr" >Unquoted Attributes</a>
+    <input type="text" disabled readonly=readonly />
+
+    <!-- 4. Self-closing tags correctly and incorrectly formed -->
+    <br>
+    <br/>
+    <img src="test.jpg" alt="test image">
+    <hr width="50%">
+
+    <!-- 5. Invalid tag names -->
+    <123invalid>This tag name is invalid.</123invalid>
+    <tag-with-dash>Valid in HTML5, but custom.</tag-with-dash>
+
+    <!-- 6. Orphaned closing tags -->
+    Some text here...
+    </p>
+    </div>
+
+    <!-- 7. Tags with no content -->
+    <div class="empty-div"></div>
+
+    <!-- 8. Deep nesting -->
+    <div><div><div><div><p>Deep nested paragraph</p></div></div></div></div>
+
+    <!-- 9. Case insensitive tags -->
+    <DiV>This is a DIV</dIv>
+</body>
+</html>

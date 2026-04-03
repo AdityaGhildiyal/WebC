@@ -66,7 +66,7 @@ std::shared_ptr<ASTNode> Parser::parseNode() {
 std::shared_ptr<ASTNode> Parser::parseTag() {
     expect(TokenType::TAG_OPEN, "Expected '<'");
     std::string name = expect(TokenType::IDENTIFIER, "Expected tag name").value;
-    
+     
     std::string id = "";
     while (!isAtEnd() && peek().type == TokenType::IDENTIFIER) {
         std::string attrName = advance().value;
@@ -99,7 +99,6 @@ std::shared_ptr<ASTNode> Parser::parseTag() {
     return node;
 }
 
-// ─── Helper: parse a brace-delimited block of nodes ────────────────────────
 static std::vector<std::shared_ptr<ASTNode>> parseBlock(Parser& p,
     std::function<std::shared_ptr<ASTNode>()> parseNodeFn,
     std::function<bool()> isAtEndFn,

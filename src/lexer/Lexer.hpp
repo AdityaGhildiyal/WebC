@@ -3,56 +3,49 @@
 #include <vector>
 
 enum class TokenType {
-    // HTML Tokens
-    TAG_OPEN,    // <
-    TAG_CLOSE,   // >
-    SLASH,       // /
-    EQUALS,      // =
+    TAG_OPEN,
+    TAG_CLOSE,
+    SLASH,
+    EQUALS,
     
-    // JS Keywords
-    LET,         // let
-    CONST,       // const
-    FUNCTION,    // function
-    IF,          // if
-    ELSE,        // else
-    RETURN,      // return
-    FOR,         // for
-    WHILE,       // while
+    LET,
+    CONST,
+    FUNCTION,
+    IF,
+    ELSE,
+    RETURN,
+    FOR,
+    WHILE,
     
-    // Identifiers and Literals
-    IDENTIFIER,  // div, x, myBtn
-    STRING,      // "hello"
-    NUMBER,      // 10, 5.5
+    IDENTIFIER,
+    STRING,
+    NUMBER,
     
-    // Single-character operators
-    PLUS,        // +
-    MINUS,       // -
-    ASTERISK,    // *
-    SEMICOLON,   // ;
-    COMMA,       // ,
-    DOT,         // .
-    COLON,       // :
+    PLUS,
+    MINUS,
+    ASTERISK,
+    SEMICOLON,
+    COMMA,
+    DOT,
+    COLON,
     
-    // Parentheses, Braces, Brackets
-    LPAREN,      // (
-    RPAREN,      // )
-    LBRACE,      // {
-    RBRACE,      // }
-    LBRACKET,    // [
-    RBRACKET,    // ]
+    LPAREN,
+    RPAREN,
+    LBRACE,
+    RBRACE,
+    LBRACKET,
+    RBRACKET,
     
-    // Multi-character operators
-    DOUBLE_EQUALS,  // ==
-    NOT_EQUALS,     // !=
-    LESS_EQUALS,    // <=
-    GREATER_EQUALS, // >=
-    LESS_THAN,      // <
-    GREATER_THAN,   // >
-    AND,            // &&
-    OR,             // ||
-    NOT,            // !
+    DOUBLE_EQUALS,
+    NOT_EQUALS,
+    LESS_EQUALS,
+    GREATER_EQUALS,
+    LESS_THAN,
+    GREATER_THAN,
+    AND,
+    OR,
+    NOT,
     
-    // System
     EOF_TOKEN,
     UNKNOWN
 };
@@ -61,7 +54,7 @@ struct Token {
     TokenType type;
     std::string value;
     int line;
-    int column;  // Added column tracking for better error messages
+    int column;
 };
 
 class Lexer {

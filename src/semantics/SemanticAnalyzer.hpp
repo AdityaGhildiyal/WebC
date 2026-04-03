@@ -12,7 +12,6 @@ public:
 private:
     SymbolTable symbolTable;
 
-    // Visit functions for each node type
     void visit(std::shared_ptr<ASTNode> node);
     void visitTag(std::shared_ptr<TagNode> node);
     void visitVarDecl(std::shared_ptr<VarDeclNode> node);

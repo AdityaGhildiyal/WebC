@@ -6,7 +6,6 @@
 #include <cstdlib>
 #include <cstring>
 
-// ─── ANSI Color Codes ──────────────────────────────────────────────────────
 #define RST  "\033[0m"
 #define BOLD "\033[1m"
 #define DIM  "\033[2m"
@@ -39,7 +38,6 @@
 #define BG_MAGENTA "\033[45m"
 #define BG_BRIGHT_BLUE "\033[104m"
 
-// Box-drawing
 static const std::string TL = "┌";
 static const std::string TR = "┐";
 static const std::string BL = "└";
@@ -52,19 +50,14 @@ static const std::string ML = "├";
 static const std::string MR = "┤";
 static const std::string XX = "┼";
 
-// ─── Constructor ──────────────────────────────────────────────────────────
 TuiRenderer::TuiRenderer() {
     termWidth = 80;
 #ifdef _WIN32
     const char* w = std::getenv("COLUMNS");
     if (w) termWidth = std::max(40, std::atoi(w));
-#else
-    const char* w = std::getenv("COLUMNS");
-    if (w) termWidth = std::max(40, std::atoi(w));
 #endif
 }
 
-// ─── Low-level helpers ─────────────────────────────────────────────────────
 void TuiRenderer::clearScreen() {
     std::cout << "\033[2J\033[H";
 }
@@ -107,7 +100,6 @@ std::vector<std::string> TuiRenderer::wordWrap(const std::string& text, int widt
     return lines;
 }
 
-// ─── Text extraction ───────────────────────────────────────────────────────
 std::string TuiRenderer::getNodeText(const std::shared_ptr<HtmlNode>& node) {
     if (!node) return "";
     std::string out = node->text;
@@ -154,7 +146,6 @@ std::string TuiRenderer::resolveInlineText(const std::shared_ptr<HtmlNode>& node
     return out;
 }
 
-// ─── Box drawing ───────────────────────────────────────────────────────────
 void TuiRenderer::drawBox(const std::string& title, const std::string& content,
                            const char* borderColor, const char* textColor, int indent) {
     int innerW = termWidth - 2 - indent * 2;
@@ -189,7 +180,6 @@ void TuiRenderer::drawBox(const std::string& title, const std::string& content,
     std::cout << BR << RST << "\n";
 }
 
-// ─── Renderers ─────────────────────────────────────────────────────────────
 
 void TuiRenderer::renderHeading(const std::shared_ptr<HtmlNode>& node, int level) {
     std::string text = resolveInlineText(node);
@@ -524,14 +514,13 @@ void TuiRenderer::renderDiv(const std::shared_ptr<HtmlNode>& node, int depth) {
     renderChildren(node, depth);
 }
 
-// ─── Main Node Router ───────────────────────────────────────────────────────
 void TuiRenderer::renderNode(const std::shared_ptr<HtmlNode>& node, int depth, bool insideList) {
     if (!node) return;
     const std::string& t = node->tag;
 
     if (t == "#text")  { if (!node->text.empty()) std::cout << "  " << node->text << "\n"; }
     else if (t == "html" || t == "body") renderChildren(node, depth);
-    else if (t == "head" || t == "script" || t == "style") { /* skip rendering */ }
+    else if (t == "head" || t == "script" || t == "style") { }
     else if (t == "title") {
         std::string title = getNodeText(node);
         std::cout << BOLD << BG_MAGENTA << FG_BRIGHT_WHITE
@@ -607,7 +596,6 @@ void TuiRenderer::renderChildren(const std::shared_ptr<HtmlNode>& node, int dept
     }
 }
 
-// ─── Main Entry Point ──────────────────────────────────────────────────────
 void TuiRenderer::render(const std::vector<std::shared_ptr<HtmlNode>>& roots) {
     clearScreen();
 

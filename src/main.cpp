@@ -1,10 +1,3 @@
-// ============================================================
-//  WebC — Unified Entry Point
-//  Supports two modes:
-//    .html  →  HtmlParser → HtmlNode tree → TuiRenderer
-//    .webc  →  Lexer → Parser → SemanticAnalyzer
-//                → HtmlNodeGen → HtmlNode tree → TuiRenderer
-// ============================================================
 #include "html/HtmlParser.hpp"
 #include "renderer/TuiRenderer.hpp"
 #include "lexer/Lexer.hpp"
@@ -19,10 +12,9 @@
 #include <vector>
 #include <cstdio>
 #ifdef _WIN32
-#  include <windows.h>
+#include <windows.h>
 #endif
 
-// ─── ANSI helpers ─────────────────────────────────────────
 #define RST    "\033[0m"
 #define BOLD   "\033[1m"
 #define DIM    "\033[2m"
@@ -32,7 +24,6 @@
 #define CYAN   "\033[36m"
 #define MAGENTA "\033[35m"
 
-// ─── Utilities ────────────────────────────────────────────
 static std::string readFile(const std::string& path) {
     std::ifstream f(path);
     if (!f.is_open()) throw std::runtime_error("Cannot open: " + path);
@@ -74,7 +65,6 @@ static void listHtmlFiles(const std::string& dir, std::vector<std::string>& out)
 #endif
 }
 
-// ─── Compile & Render one .webc file ─────────────────────
 static void renderWebc(const std::string& path, TuiRenderer& renderer) {
     std::cout << CYAN << "  [WebC] " << RST << path << "\n";
 
@@ -99,7 +89,6 @@ static void renderWebc(const std::string& path, TuiRenderer& renderer) {
     renderer.render(nodes);
 }
 
-// ─── Parse & Render one .html file ───────────────────────
 static void renderHtml(const std::string& path, TuiRenderer& renderer) {
     std::cout << CYAN << "  [HTML] " << RST << path << "\n";
     std::string src = readFile(path);
@@ -108,7 +97,6 @@ static void renderHtml(const std::string& path, TuiRenderer& renderer) {
     renderer.render(nodes);
 }
 
-// ─── Main ────────────────────────────────────────────────
 int main(int argc, char* argv[]) {
 #ifdef _WIN32
     SetConsoleOutputCP(CP_UTF8);

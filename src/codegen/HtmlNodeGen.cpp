@@ -3,7 +3,6 @@
 #include <cmath>
 #include <iostream>
 
-// ─── Helpers ───────────────────────────────────────────────────────────────
 
 std::string HtmlNodeGen::fmtNum(double v) const {
     if (v == std::floor(v) && std::abs(v) < 1e15) {
@@ -16,7 +15,6 @@ std::string HtmlNodeGen::fmtNum(double v) const {
     return ss.str();
 }
 
-// ─── Expression Evaluators ─────────────────────────────────────────────────
 
 double HtmlNodeGen::evalNum(std::shared_ptr<ASTNode> node) {
     if (!node) return 0.0;
@@ -49,7 +47,6 @@ double HtmlNodeGen::evalNum(std::shared_ptr<ASTNode> node) {
     return 0.0;
 }
 
-// evalCond — evaluate a comparison/logical expression as a boolean (0/1)
 bool HtmlNodeGen::evalCond(std::shared_ptr<ASTNode> node) {
     if (!node) return false;
 
@@ -97,7 +94,6 @@ std::string HtmlNodeGen::evalStr(std::shared_ptr<ASTNode> node) {
     return "";
 }
 
-// ─── Statement Executor ────────────────────────────────────────────────────
 
 void HtmlNodeGen::execStatement(std::shared_ptr<ASTNode> node) {
     if (auto decl = std::dynamic_pointer_cast<VarDeclNode>(node)) {
@@ -204,8 +200,6 @@ void HtmlNodeGen::generateInto(const std::vector<std::shared_ptr<ASTNode>>& node
     flushText();
 }
 
-// ─── Tag Visitor ───────────────────────────────────────────────────────────
-
 std::shared_ptr<HtmlNode> HtmlNodeGen::visitTag(std::shared_ptr<TagNode> tag) {
     auto node = std::make_shared<HtmlNode>(tag->tagName);
 
@@ -220,7 +214,6 @@ std::shared_ptr<HtmlNode> HtmlNodeGen::visitTag(std::shared_ptr<TagNode> tag) {
     return node;
 }
 
-// ─── Entry Point ───────────────────────────────────────────────────────────
 
 std::vector<std::shared_ptr<HtmlNode>> HtmlNodeGen::generate(
     const std::vector<std::shared_ptr<ASTNode>>& nodes)
