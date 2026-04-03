@@ -93,26 +93,15 @@ std::shared_ptr<ASTNode> Parser::parseTag() {
 
     expect(TokenType::TAG_OPEN, "Expected '</'");
     expect(TokenType::SLASH, "Expected '/'");
-    expect(TokenType::IDENTIFIER, "Expected closing tag name");
+    std::string closingName = expect(TokenType::IDENTIFIER, "Expected closing tag name").value;
+    if (closingName != name) {
+        throw std::runtime_error(
+            "Mismatched tag: opened <" + name + "> but closed </" + closingName + ">"
+        );
+    }
     expect(TokenType::TAG_CLOSE, "Expected '>'");
 
     return node;
-}
-
-static std::vector<std::shared_ptr<ASTNode>> parseBlock(Parser& p,
-    std::function<std::shared_ptr<ASTNode>()> parseNodeFn,
-    std::function<bool()> isAtEndFn,
-    std::function<Token()> peekFn,
-    std::function<Token()> advanceFn)
-{
-    (void)p;
-    advanceFn(); 
-    std::vector<std::shared_ptr<ASTNode>> body;
-    while (!isAtEndFn() && peekFn().type != TokenType::RBRACE) {
-        body.push_back(parseNodeFn());
-    }
-    if (peekFn().type == TokenType::RBRACE) advanceFn(); 
-    return body;
 }
 
 std::shared_ptr<ASTNode> Parser::parseStatement() {

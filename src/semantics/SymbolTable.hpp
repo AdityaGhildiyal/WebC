@@ -28,13 +28,11 @@ public:
 
     void pushScope() {
         scopes.push_back({});
-        std::cout << "[SymbolTable] Pushed new scope (depth: " << scopes.size() << ")\n";
     }
 
     void popScope() {
         if (scopes.size() > 1) {
             scopes.pop_back();
-            std::cout << "[SymbolTable] Popped scope (depth: " << scopes.size() << ")\n";
         }
     }
 

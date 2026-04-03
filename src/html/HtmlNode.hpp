@@ -3,7 +3,6 @@
 #include <vector>
 #include <map>
 #include <memory>
-#include <cstdio>
 
 class HtmlNode {
 public:
@@ -18,16 +17,5 @@ public:
     std::string attr(const std::string& key, const std::string& def = "") const {
         auto it = attrs.find(key);
         return it != attrs.end() ? it->second : def;
-    }
-
-    void debugPrint(int indent = 0) const {
-        for (int i = 0; i < indent; i++) printf("  ");
-        printf("<%s", tag.c_str());
-        for (auto& pair : attrs)
-            printf(" %s=\"%s\"", pair.first.c_str(), pair.second.c_str());
-        printf(">");
-        if (!text.empty()) printf(" \"%s\"", text.c_str());
-        printf("\n");
-        for (auto& child : children) child->debugPrint(indent + 1);
     }
 };
