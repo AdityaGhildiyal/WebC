@@ -43,6 +43,12 @@ void SemanticAnalyzer::visit(std::shared_ptr<ASTNode> node) {
     else if (auto ifNode = std::dynamic_pointer_cast<IfNode>(node)) {
         visitIf(ifNode);
     }
+    else if (auto forNode = std::dynamic_pointer_cast<ForNode>(node)) {
+        visitFor(forNode);
+    }
+    else if (auto whileNode = std::dynamic_pointer_cast<WhileNode>(node)) {
+        visitWhile(whileNode);
+    }
     else if (auto returnNode = std::dynamic_pointer_cast<ReturnNode>(node)) {
         visitReturn(returnNode);
     }
@@ -167,8 +173,25 @@ void SemanticAnalyzer::visitIf(std::shared_ptr<IfNode> node) {
 
 void SemanticAnalyzer::visitReturn(std::shared_ptr<ReturnNode> node) {
     std::cout << "[Semantics] Processing Return Statement\n";
-    
     if (node->value) {
         visit(node->value);
     }
+}
+
+void SemanticAnalyzer::visitFor(std::shared_ptr<ForNode> node) {
+    std::cout << "[Semantics] Processing For Loop\n";
+    if (node->init) visit(node->init);
+    if (node->condition) visit(node->condition);
+    symbolTable.pushScope();
+    for (auto& stmt : node->body) visit(stmt);
+    symbolTable.popScope();
+    if (node->increment) visit(node->increment);
+}
+
+void SemanticAnalyzer::visitWhile(std::shared_ptr<WhileNode> node) {
+    std::cout << "[Semantics] Processing While Loop\n";
+    if (node->condition) visit(node->condition);
+    symbolTable.pushScope();
+    for (auto& stmt : node->body) visit(stmt);
+    symbolTable.popScope();
 }

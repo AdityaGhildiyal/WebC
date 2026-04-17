@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <map>
 
 class ASTNode {
 public:
@@ -12,6 +13,7 @@ class TagNode : public ASTNode {
 public:
     std::string tagName;
     std::string id;
+    std::map<std::string, std::string> attrs;
     std::string innerText;
     std::vector<std::shared_ptr<ASTNode>> children;
 
@@ -63,6 +65,14 @@ public:
     std::vector<std::shared_ptr<ASTNode>> body;
 
     FunctionNode(std::string n) : name(n) {}
+};
+
+class FunctionCallNode : public ASTNode {
+public:
+    std::string name;
+    std::vector<std::shared_ptr<ASTNode>> arguments;
+
+    FunctionCallNode(std::string n) : name(n) {}
 };
 
 class IfNode : public ASTNode {

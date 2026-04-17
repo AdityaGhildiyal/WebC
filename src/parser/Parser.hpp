@@ -30,7 +30,9 @@ private:
     std::shared_ptr<ASTNode> parseWhileStatement();
     std::shared_ptr<ASTNode> parseExpression();
     std::shared_ptr<ASTNode> parseComparison();
-    std::shared_ptr<ASTNode> parseTerm();        
-    std::shared_ptr<ASTNode> parseFactor();      
-    std::shared_ptr<ASTNode> parsePrimary();     
+    std::shared_ptr<ASTNode> parseTerm();
+    std::shared_ptr<ASTNode> parseFactor();
+    std::shared_ptr<ASTNode> parsePrimary();
+    std::shared_ptr<ASTNode> parseFunctionDecl();
+    std::shared_ptr<ASTNode> parseFunctionCall(const std::string& name);
 };

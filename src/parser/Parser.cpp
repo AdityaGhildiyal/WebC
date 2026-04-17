@@ -1,5 +1,6 @@
 #include "Parser.hpp"
 #include <iostream>
+#include <map>
 
 Parser::Parser(const std::vector<Token>& tokens) : tokens(tokens) {}
 
@@ -52,6 +53,9 @@ std::shared_ptr<ASTNode> Parser::parseNode() {
     if (peek().type == TokenType::WHILE) {
         return parseWhileStatement();
     }
+    if (peek().type == TokenType::FUNCTION) {
+        return parseFunctionDecl();
+    }
     if (peek().type == TokenType::LET || peek().type == TokenType::CONST) {
         return parseStatement();
     }
@@ -68,21 +72,27 @@ std::shared_ptr<ASTNode> Parser::parseTag() {
     std::string name = expect(TokenType::IDENTIFIER, "Expected tag name").value;
      
     std::string id = "";
+    std::map<std::string, std::string> parsedAttrs;
     while (!isAtEnd() && peek().type == TokenType::IDENTIFIER) {
         std::string attrName = advance().value;
         if (peek().type == TokenType::EQUALS) {
-            advance(); 
+            advance();
+            std::string val;
             if (peek().type == TokenType::STRING) {
-                std::string val = advance().value;
-                if (attrName == "id") id = val;
+                val = advance().value;
             } else if (peek().type == TokenType::NUMBER || peek().type == TokenType::IDENTIFIER) {
-                advance(); 
+                val = advance().value;
             }
+            parsedAttrs[attrName] = val;
+            if (attrName == "id") id = val;
+        } else {
+            parsedAttrs[attrName] = "true";
         }
     }
 
     expect(TokenType::TAG_CLOSE, "Expected '>'");
     auto node = std::make_shared<TagNode>(name, id);
+    node->attrs = parsedAttrs;
 
     while (!isAtEnd() && 
            !(peek().type == TokenType::TAG_OPEN && 
@@ -289,6 +299,9 @@ std::shared_ptr<ASTNode> Parser::parsePrimary() {
     
     if (peek().type == TokenType::IDENTIFIER) {
         std::string name = advance().value;
+        if (peek().type == TokenType::LPAREN) {
+            return parseFunctionCall(name);
+        }
         return std::make_shared<IdentifierNode>(name);
     }
     
@@ -299,6 +312,41 @@ std::shared_ptr<ASTNode> Parser::parsePrimary() {
         return expr;
     }
     
-    throw std::runtime_error("Unexpected token in expression at line " + 
+    throw std::runtime_error("Unexpected token in expression at line " +
                             std::to_string(peek().line));
+}
+
+std::shared_ptr<ASTNode> Parser::parseFunctionDecl() {
+    advance(); // consume 'function'
+    std::string name = expect(TokenType::IDENTIFIER, "Expected function name").value;
+    expect(TokenType::LPAREN, "Expected '(' after function name");
+
+    auto funcNode = std::make_shared<FunctionNode>(name);
+    while (!isAtEnd() && peek().type != TokenType::RPAREN) {
+        std::string param = expect(TokenType::IDENTIFIER, "Expected parameter name").value;
+        funcNode->parameters.push_back(param);
+        if (peek().type == TokenType::COMMA) advance();
+    }
+    expect(TokenType::RPAREN, "Expected ')' after parameters");
+    expect(TokenType::LBRACE, "Expected '{' to open function body");
+
+    while (!isAtEnd() && peek().type != TokenType::RBRACE) {
+        funcNode->body.push_back(parseNode());
+    }
+    expect(TokenType::RBRACE, "Expected '}' to close function body");
+
+    return funcNode;
+}
+
+std::shared_ptr<ASTNode> Parser::parseFunctionCall(const std::string& name) {
+    advance(); // consume '('
+    auto callNode = std::make_shared<FunctionCallNode>(name);
+
+    while (!isAtEnd() && peek().type != TokenType::RPAREN) {
+        callNode->arguments.push_back(parseExpression());
+        if (peek().type == TokenType::COMMA) advance();
+    }
+    expect(TokenType::RPAREN, "Expected ')' after function arguments");
+
+    return callNode;
 }

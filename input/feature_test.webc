@@ -1,0 +1,117 @@
+<html>
+<body>
+
+<header>
+  <h1> "WebC Feature Tests" </h1>
+</header>
+
+<main>
+
+  <section>
+    <h2> "Test 1: Tag Attributes Preserved (class, href, src, type)" </h2>
+
+    <p> "Navigation link with href attribute:" </p>
+    <a href="https://example.com"> "Click Here — should show link URL" </a>
+
+    <p> "Input button with type and value:" </p>
+    <button id="btn1"> "Submit Form" </button>
+
+    <p> "Anchor with id and class:" </p>
+    <a id="main-link" href="/dashboard"> "Dashboard Link" </a>
+  </section>
+
+  <section>
+    <h2> "Test 2: String Equality (== and !=)" </h2>
+
+    let lang = "WebC";
+    let version = "1.0";
+
+    if (lang == "WebC") {
+      <p> "PASS: lang == WebC is TRUE" </p>
+    } else {
+      <p> "FAIL: lang == WebC returned FALSE" </p>
+    }
+
+    if (lang == "Java") {
+      <p> "FAIL: lang == Java returned TRUE" </p>
+    } else {
+      <p> "PASS: lang == Java is correctly FALSE" </p>
+    }
+
+    if (version != "2.0") {
+      <p> "PASS: version != 2.0 is TRUE" </p>
+    } else {
+      <p> "FAIL: version != 2.0 returned FALSE" </p>
+    }
+  </section>
+
+  <section>
+    <h2> "Test 3: For Loop with Scope (visitFor)" </h2>
+
+    <p> "Counting 1 to 5 using for loop:" </p>
+    <ul>
+      for (let i = 1; i <= 5; i = i + 1) {
+        let squared = i * i;
+        <li> "i = " i " | i squared = " squared </li>
+      }
+    </ul>
+    <p> "For loop scope test: 'i' and 'squared' should not exist here." </p>
+  </section>
+
+  <section>
+    <h2> "Test 4: While Loop with Scope (visitWhile)" </h2>
+
+    <p> "Countdown from 5 to 1 using while loop:" </p>
+    <ul>
+      let counter = 5;
+      while (counter >= 1) {
+        let msg = "Counting";
+        <li> msg " — " counter </li>
+        counter = counter - 1;
+      }
+    </ul>
+    <p> "While loop scope test complete." </p>
+  </section>
+
+  <section>
+    <h2> "Test 5: Mixed — Attributes + String Logic + Loops Together" </h2>
+
+    let status = "active";
+    <p> "Current status: " status </p>
+
+    if (status == "active") {
+      <p> "PASS: Status is active — string branch taken correctly" </p>
+      <a href="dashboard.html"> "Go to Dashboard" </a>
+    } else {
+      <p> "FAIL: Wrong branch taken" </p>
+    }
+
+    <table>
+      <thead>
+        <tr>
+          <th> "Step" </th>
+          <th> "Value" </th>
+          <th> "Check" </th>
+        </tr>
+      </thead>
+      <tbody>
+        for (let n = 1; n <= 4; n = n + 1) {
+          let val = n * 10;
+          <tr>
+            <td> "Step " n </td>
+            <td> val </td>
+            <td> "OK" </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </section>
+
+</main>
+
+<footer>
+  <p> "All 5 feature tests completed — WebC feature_test.webc" </p>
+</footer>
+
+</body>
+</html>

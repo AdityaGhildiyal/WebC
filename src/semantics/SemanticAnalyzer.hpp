@@ -22,5 +22,7 @@ private:
     void visitString(std::shared_ptr<StringNode> node);
     void visitFunction(std::shared_ptr<FunctionNode> node);
     void visitIf(std::shared_ptr<IfNode> node);
+    void visitFor(std::shared_ptr<ForNode> node);
+    void visitWhile(std::shared_ptr<WhileNode> node);
     void visitReturn(std::shared_ptr<ReturnNode> node);
 };

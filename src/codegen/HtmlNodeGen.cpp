@@ -54,15 +54,31 @@ bool HtmlNodeGen::evalCond(std::shared_ptr<ASTNode> node) {
         if (bin->op == '&') return evalCond(bin->left) && evalCond(bin->right);
         if (bin->op == '|') return evalCond(bin->left) || evalCond(bin->right);
 
+        bool leftIsStr  = std::dynamic_pointer_cast<StringNode>(bin->left)  != nullptr;
+        bool rightIsStr = std::dynamic_pointer_cast<StringNode>(bin->right) != nullptr;
+        bool leftIsStrVar = false;
+        bool rightIsStrVar = false;
+        if (auto lid = std::dynamic_pointer_cast<IdentifierNode>(bin->left))
+            leftIsStrVar = strVars.count(lid->name) > 0;
+        if (auto rid = std::dynamic_pointer_cast<IdentifierNode>(bin->right))
+            rightIsStrVar = strVars.count(rid->name) > 0;
+
+        if (leftIsStr || rightIsStr || leftIsStrVar || rightIsStrVar) {
+            std::string L = evalStr(bin->left);
+            std::string R = evalStr(bin->right);
+            if (bin->op == '=') return L == R;
+            if (bin->op == '!') return L != R;
+        }
+
         double L = evalNum(bin->left);
         double R = evalNum(bin->right);
         switch (bin->op) {
-            case '=': return L == R;          
-            case '!': return L != R;          
+            case '=': return L == R;
+            case '!': return L != R;
             case '<': return L <  R;
             case '>': return L >  R;
-            case 'L': return L <= R;          
-            case 'G': return L >= R;         
+            case 'L': return L <= R;
+            case 'G': return L >= R;
             default:  return evalNum(node) != 0.0;
         }
     }
@@ -187,6 +203,10 @@ void HtmlNodeGen::generateInto(const std::vector<std::shared_ptr<ASTNode>>& node
             flushText();
             evalWhile(whileNode, parent);
         }
+        else if (auto callNode = std::dynamic_pointer_cast<FunctionCallNode>(child)) {
+            flushText();
+            evalFunctionCall(callNode, parent);
+        }
         else if (std::dynamic_pointer_cast<VarDeclNode>(child) ||
                  std::dynamic_pointer_cast<AssignmentNode>(child)) {
             flushText();
@@ -203,11 +223,14 @@ void HtmlNodeGen::generateInto(const std::vector<std::shared_ptr<ASTNode>>& node
 std::shared_ptr<HtmlNode> HtmlNodeGen::visitTag(std::shared_ptr<TagNode> tag) {
     auto node = std::make_shared<HtmlNode>(tag->tagName);
 
+    for (auto& pair : tag->attrs) {
+        node->attrs[pair.first] = pair.second;
+    }
+
     if (!tag->id.empty()) {
         node->attrs["id"] = tag->id;
         domElements[tag->id] = node;
     }
-
 
     generateInto(tag->children, node);
 
@@ -227,7 +250,9 @@ std::vector<std::shared_ptr<HtmlNode>> HtmlNodeGen::generate(
     auto wrapper = std::make_shared<HtmlNode>("__root__");
 
     for (auto& node : nodes) {
-        if (auto tag = std::dynamic_pointer_cast<TagNode>(node)) {
+        if (auto funcDecl = std::dynamic_pointer_cast<FunctionNode>(node)) {
+            functionTable[funcDecl->name] = funcDecl;
+        } else if (auto tag = std::dynamic_pointer_cast<TagNode>(node)) {
             auto htmlNode = visitTag(tag);
             if (htmlNode) roots.push_back(htmlNode);
         } else if (auto ifNode = std::dynamic_pointer_cast<IfNode>(node)) {
@@ -242,10 +267,45 @@ std::vector<std::shared_ptr<HtmlNode>> HtmlNodeGen::generate(
             evalWhile(whileNode, wrapper);
             for (auto& c : wrapper->children) roots.push_back(c);
             wrapper->children.clear();
+        } else if (auto callNode = std::dynamic_pointer_cast<FunctionCallNode>(node)) {
+            evalFunctionCall(callNode, wrapper);
+            for (auto& c : wrapper->children) roots.push_back(c);
+            wrapper->children.clear();
         } else {
             execStatement(node);
         }
     }
 
     return roots;
+}
+
+void HtmlNodeGen::evalFunctionCall(std::shared_ptr<FunctionCallNode> callNode,
+                                    std::shared_ptr<HtmlNode> parent) {
+    auto it = functionTable.find(callNode->name);
+    if (it == functionTable.end()) return;
+
+    auto func = it->second;
+
+    // Save current variable state
+    auto savedNum = numVars;
+    auto savedStr = strVars;
+
+    // Bind arguments to parameter names
+    for (size_t i = 0; i < func->parameters.size(); i++) {
+        if (i < callNode->arguments.size()) {
+            auto& arg = callNode->arguments[i];
+            if (std::dynamic_pointer_cast<StringNode>(arg)) {
+                strVars[func->parameters[i]] = evalStr(arg);
+            } else {
+                numVars[func->parameters[i]] = evalNum(arg);
+            }
+        }
+    }
+
+    // Execute the function body
+    generateInto(func->body, parent);
+
+    // Restore caller's variable state
+    numVars = savedNum;
+    strVars = savedStr;
 }
